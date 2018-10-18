@@ -1,6 +1,7 @@
 # Graduation Work | Bachelor's Degree
-__Lomonosov Moscow State University__, __Faculty of Computer Science__
+__Lomonosov Moscow State University,__
+Faculty of Computer Science, Graphics Lab
 
-__Computer Graphics Laboratory__
+__Graduate:__ Dmitriy Goncharenko
 
 ## Research of Algorithm Changing the Time of Day on the Image 
