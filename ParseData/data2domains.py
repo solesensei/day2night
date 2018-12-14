@@ -97,6 +97,8 @@ class DomainShifter(object):
                             print(f'{shift.__name__}: {src} → {dst}')
                             print(f'{shift.__name__}: {src} → {dst}', file=log)
                             is_shifted = True
+                        elif os.path.exists(dst):
+                            is_shifted = True
                         break
                 if not is_shifted:
                     print(f'{row[col_name]} file not shifted', file=err)
