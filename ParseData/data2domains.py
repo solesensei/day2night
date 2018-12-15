@@ -1,12 +1,12 @@
 # Script parsing dataset folder to several domains by states from csv file
 
 import pandas as pd
-import os
+import os, sys
 from shutil import copy, move
 
 # ------------------------ Variables ------------------------ 
-datapath = '../datasets/nexet/nexet_2017_1/' # path to dataset directory
-csvfile = '../datasets/nexet/train.csv' # path to csv file
+datapath = '/content/drive/datasets/nexet/nexet_2017_1/' # path to dataset directory
+csvfile = '/content/drive/datasets/nexet/train.csv' # path to csv file
 col_name = 'image_filename' # column name with dataset's filenames
 col_state = 'lighting' # column name with dataset's states 
 domains = {
@@ -16,6 +16,12 @@ domains = {
             'TestB' : ['Night', 'Twilight']
           }  # making domain directories {Domain_Name : States}
 mode = 'move' # 'move' | 'copy' all files from dataset folder to domains
+# -----------------------------------------------------------
+
+# ------------------------ Arguments ------------------------ 
+mode = sys.argv[1] if len(sys.argv) > 1 else mode
+datapath = sys.argv[2] if len(sys.argv) > 2 else datapath
+csvfile = sys.argv[3] if len(sys.argv) > 3 else csvfile
 # -----------------------------------------------------------
 
 class DomainShifter(object):
@@ -30,7 +36,7 @@ class DomainShifter(object):
         states = set()
         for state in self.csv[column]:
             states.add(state) 
-        print("States:", states)
+        print("States:", *states)
         return states
 
     def __init__(self, data, file, domains, col_name, col_state, sep=','):
@@ -97,7 +103,7 @@ class DomainShifter(object):
                     if row[col_state] in item[1]:
                         dst = os.path.join(base, item[0])
                         dstname = os.path.exists(os.path.join(dst, name))
-                        if os.path.exists(src) and not os.path.exists(dstname):
+                        if os.path.exists(src) and (mode == 'move' or not os.path.exists(dstname)):
                             shift(src, dst)
                             print(f'{shift.__name__}: {src} → {dst}', file=log)
                             is_shifted = True
@@ -108,6 +114,7 @@ class DomainShifter(object):
                     print(f'{row[col_name]} file not shifted', file=err)
         print('Shifiting completed!')
 
+# Main
 ds = DomainShifter(datapath, csvfile, domains, col_name, col_state)
 ds.shift_domains(mode)
 
