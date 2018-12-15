@@ -16,12 +16,14 @@ domains = {
             'TestB' : ['Night', 'Twilight']
           }  # making domain directories {Domain_Name : States}
 mode = 'move' # 'move' | 'copy' all files from dataset folder to domains
+domains2data = False # set True to shift all files back to datapath
 # -----------------------------------------------------------
 
 # ------------------------ Arguments ------------------------ 
 mode = sys.argv[1] if len(sys.argv) > 1 else mode
-datapath = sys.argv[2] if len(sys.argv) > 2 else datapath
-csvfile = sys.argv[3] if len(sys.argv) > 3 else csvfile
+domains2data = True if len(sys.argv) > 2 and sys.argv[2] == 'True' else domains2data
+datapath = sys.argv[3] if len(sys.argv) > 3 else datapath
+csvfile = sys.argv[4] if len(sys.argv) > 4 else csvfile
 # -----------------------------------------------------------
 
 class DomainShifter(object):
@@ -62,8 +64,45 @@ class DomainShifter(object):
         self.csv = pd.read_csv(file, sep=sep, encoding='utf8') # read csv with pandas
         check_cols(col_name, col_state) # check on column names exists
         self.states = self.get_states(col_state) # get all states from csv
+    
+    def back_data(self, mode='move'):
+        """ Backing up data from domain folders to dataset folder """
+        if mode == 'copy':
+            shift = copy
+        elif mode == 'move':
+            shift = move
+        else:
+            raise Exception(f'Shift Domains: no {mode} found!')
 
-    def shift_domains(self, mode='copy'):
+        print('Backup shifting starts...')
+        print(f'Mode: {shift.__name__}')  
+
+        with open('log.txt', 'a', encoding="utf-8") as log, open('err.txt', 'a', encoding="utf-8") as err:
+            print('-------- back data ----------', file=log)
+            print('-------- back data ----------', file=err)
+            for root, sdir, _ in os.walk(self.dataset):
+                for folder in sdir:
+                    if folder in self.domains.keys():
+                        print(f'Start parsing {folder}')
+                        print(f'Start parsing {folder}', file=log)
+                        for r, _, files in os.walk(os.path.join(root, folder)):
+                            nfile = len(files)
+                            print('Files:', nfile)
+                            for i, name in enumerate(files):
+                                if i % (nfile // 30 + 1) == 0:
+                                    print(i, 'files shifted')
+                                src = os.path.join(r, name)
+                                dst = os.path.join(root, name)
+                                if mode == 'move' or not os.path.exists(dst):
+                                    shift(src, dst)
+                        print(f'Parsed: {folder}') 
+                        print(f'Parsed: {folder}', file=log)
+                    else:
+                        print(f'Not domain folder {folder} found')
+                        print(f'Not domain folder {folder} found', file=log)
+
+
+    def shift_domains(self, mode='move'):
         """ Creating domain folders and parsing dataset folder by csv """
         if mode == 'copy':
             shift = copy
@@ -91,18 +130,18 @@ class DomainShifter(object):
 
         nrow = len(self.csv)
         with open('log.txt', 'a', encoding="utf-8") as log, open('err.txt', 'a', encoding="utf-8") as err:
-            print('------------------', file=err)
-            print('------------------', file=log)
+            print('-------- shift domains ----------', file=err)
+            print('-------- shift domains ----------', file=log)
             for i, row in self.csv.iterrows():
                 if i % 1000 == 0:
-                    print(str(i * 100 // nrow) + '% processed')
+                    print(i, 'files processed')
                 name = str(row[col_name])
                 src = os.path.join(base, name)
                 is_shifted = False
                 for item in self.domains.items():
                     if row[col_state] in item[1]:
                         dst = os.path.join(base, item[0])
-                        dstname = os.path.exists(os.path.join(dst, name))
+                        dstname = os.path.join(dst, name)
                         if os.path.exists(src) and (mode == 'move' or not os.path.exists(dstname)):
                             shift(src, dst)
                             print(f'{shift.__name__}: {src} → {dst}', file=log)
@@ -116,5 +155,8 @@ class DomainShifter(object):
 
 # Main
 ds = DomainShifter(datapath, csvfile, domains, col_name, col_state)
-ds.shift_domains(mode)
+if not domains2data:
+    ds.shift_domains(mode)
+else:
+    ds.back_data(mode)
 
