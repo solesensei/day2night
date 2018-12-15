@@ -5,10 +5,8 @@ import os
 from shutil import copy, move
 
 # ------------------------ Variables ------------------------ 
-# datapath = '../datasets/nexet/nexet_2017_1/' # path to dataset directory
-# csvfile = '../datasets/nexet/test.csv' # path to csv file
-datapath = 'nexet_2017_1/'
-csvfile = 'train.csv'
+datapath = '../datasets/nexet/nexet_2017_1/' # path to dataset directory
+csvfile = '../datasets/nexet/train.csv' # path to csv file
 col_name = 'image_filename' # column name with dataset's filenames
 col_state = 'lighting' # column name with dataset's states 
 domains = {
@@ -76,34 +74,39 @@ class DomainShifter(object):
         self
 
         # Creating directories
+        print('Creating directories...')
         base = self.dataset
         for ndir in self.domains.keys():
             path = os.path.join(base, ndir)
             if not os.path.isdir(path):
                 os.mkdir(path)
+                print(f'{path} created!')
+        print('Created!')
 
+        nrow = len(self.csv)
         with open('log.txt', 'a', encoding="utf-8") as log, open('err.txt', 'a', encoding="utf-8") as err:
             print('------------------', file=err)
             print('------------------', file=log)
-            for _, row in self.csv.iterrows():
+            for i, row in self.csv.iterrows():
+                if i % 1000 == 0:
+                    print(str(i * 100 // nrow) + '% processed')
                 name = str(row[col_name])
                 src = os.path.join(base, name)
                 is_shifted = False
                 for item in self.domains.items():
                     if row[col_state] in item[1]:
                         dst = os.path.join(base, item[0])
-                        if os.path.exists(src):
+                        dstname = os.path.exists(os.path.join(dst, name))
+                        if os.path.exists(src) and not os.path.exists(dstname):
                             shift(src, dst)
-                            print(f'{shift.__name__}: {src} → {dst}')
                             print(f'{shift.__name__}: {src} → {dst}', file=log)
                             is_shifted = True
-                        elif os.path.exists(os.path.join(dst, name)):
+                        elif os.path.exists(dstname):
                             is_shifted = True
                         break
                 if not is_shifted:
                     print(f'{row[col_name]} file not shifted', file=err)
         print('Shifiting completed!')
-
 
 ds = DomainShifter(datapath, csvfile, domains, col_name, col_state)
 ds.shift_domains(mode)
