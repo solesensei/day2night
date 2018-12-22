@@ -20,11 +20,10 @@ domains2data = False # set True to shift all files back to datapath
 # -----------------------------------------------------------
 
 # ------------------------ Arguments ------------------------ 
-mode = sys.argv[1] if len(sys.argv) > 1 else mode
-domains2data = True if len(sys.argv) > 2 and sys.argv[2] == 'True' else domains2data
-datapath = sys.argv[3] if len(sys.argv) > 3 else datapath
-csvfile = sys.argv[4] if len(sys.argv) > 4 else csvfile
+mode = "move" #@param ["move", "copy", "none"]
+domains2data = False #@param {type:"boolean"}
 # -----------------------------------------------------------
+
 
 class DomainShifter(object):
     """
@@ -116,8 +115,9 @@ class DomainShifter(object):
         domain_split = {}
         for state in self.states:
             domain_split[state] = sum(state in v for v in self.domains.values())
-        self
-
+            if domain_split[state] == 0:
+                raise Exception(f'States Error: no {state} found in configuration')
+        
         # Creating directories
         print('Creating directories...')
         base = self.dataset
@@ -127,8 +127,8 @@ class DomainShifter(object):
                 os.mkdir(path)
                 print(f'{path} created!')
         print('Created!')
-
-        nrow = len(self.csv)
+        
+        k = 0
         with open('log.txt', 'a', encoding="utf-8") as log, open('err.txt', 'a', encoding="utf-8") as err:
             print('-------- shift domains ----------', file=err)
             print('-------- shift domains ----------', file=log)
@@ -138,8 +138,15 @@ class DomainShifter(object):
                 name = str(row[col_name])
                 src = os.path.join(base, name)
                 is_shifted = False
+                
+                k += 1
+                if k % 2 == 0: #TODO: add domain split
+                    domain_type = 'Test'
+                else:
+                    domain_type = 'Train'
+
                 for item in self.domains.items():
-                    if row[col_state] in item[1]:
+                    if row[col_state] in item[1] and item[0][:-1] == domain_type:
                         dst = os.path.join(base, item[0])
                         dstname = os.path.join(dst, name)
                         if os.path.exists(src) and (mode == 'move' or not os.path.exists(dstname)):
@@ -151,6 +158,13 @@ class DomainShifter(object):
                         break
                 if not is_shifted:
                     print(f'{row[col_name]} file not shifted', file=err)
+            for root, sdir, _ in os.walk(self.dataset):
+                for folder in sdir:
+                    if folder in self.domains.keys():
+                        for r, _, files in os.walk(os.path.join(root, folder)):
+                            nfile = len(files)
+                            print(f'Files in domain {folder}: {nfile}')
+                            print(f'Files in domain {folder}: {nfile}', file=log)
         print('Shifiting completed!')
 
 # Main
@@ -159,4 +173,3 @@ if not domains2data:
     ds.shift_domains(mode)
 else:
     ds.back_data(mode)
-
