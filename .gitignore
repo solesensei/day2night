@@ -1,0 +1,9 @@
+# Ingnore files for git
+
+# Hidden and meta folders
+.vscode
+.tmp*
+.ipynb_checkpoints
+
+# Extensions
+*.ini
