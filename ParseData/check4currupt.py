@@ -18,7 +18,7 @@ with open('log.txt', 'a') as log:
         curr_count[root] = 0
         for file in files:
             try:
-                src = os.path.join(datapath, file)
+                src = os.path.join(root, file)
                 img = Image.open(src) 
                 img.verify()
             except (IOError, SyntaxError) as e:
