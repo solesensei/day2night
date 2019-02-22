@@ -41,6 +41,7 @@ def get_all_data_loaders(conf):
     num_workers = conf['num_workers']
     if 'new_size' in conf:
         new_size_a = new_size_b = conf['new_size']
+        print(f'Image Size: {new_size_a}px')
     else:
         new_size_a = conf['new_size_a']
         new_size_b = conf['new_size_b']
