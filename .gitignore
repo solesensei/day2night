@@ -7,3 +7,10 @@
 
 # Extensions
 *.ini
+*.toc
+*.gz
+*.out
+*.fls
+*.aux
+*.fdb_latexmk
+*.log
