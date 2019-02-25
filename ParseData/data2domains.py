@@ -1,27 +1,32 @@
-# Script parsing dataset folder to several domains by states from csv file
+#@title Shift Domains (nexet dataset)
+#@markdown Script parsing dataset folder to several domains by states from csv file
 
 import pandas as pd
 import os, sys
 from shutil import copy, move
 
+os.chdir('/content/drive/datasets/nexet')
 # ------------------------ Variables ------------------------ 
 datapath = '/content/drive/datasets/nexet/nexet_2017_1/' # path to dataset directory
 csvfile = '/content/drive/datasets/nexet/train.csv' # path to csv file
 col_name = 'image_filename' # column name with dataset's filenames
 col_state = 'lighting' # column name with dataset's states 
 domains = {
-            'TrainA' : 'Day',
-            'TrainB' : ['Night', 'Twilight'],
-            'TestA' : 'Day',
-            'TestB' : ['Night', 'Twilight']
+            'trainA' : 'Day',
+            'trainB' : 'Night',
+            'testA' : 'Day',
+            'testB' : 'Night'
           }  # making domain directories {Domain_Name : States}
 mode = 'move' # 'move' | 'copy' all files from dataset folder to domains
 domains2data = False # set True to shift all files back to datapath
 # -----------------------------------------------------------
-
-# ------------------------ Arguments ------------------------ 
+ 
+# ------------------------ Dynamic Variables ------------------------ 
 mode = "move" #@param ["move", "copy", "none"]
-domains2data = False #@param {type:"boolean"}
+domains2data = True #@param {type:"boolean"}
+show_errors = 5 #@param {type:"slider", min:0, max:100, step:1}
+show_log = 10 #@param {type:"slider", min:0, max:100, step:1}
+train_test_ratio = 90 #@param {type:"slider", min:5, max:95, step:5}
 # -----------------------------------------------------------
 
 
@@ -115,8 +120,6 @@ class DomainShifter(object):
         domain_split = {}
         for state in self.states:
             domain_split[state] = sum(state in v for v in self.domains.values())
-            if domain_split[state] == 0:
-                raise Exception(f'States Error: no {state} found in configuration')
         
         # Creating directories
         print('Creating directories...')
@@ -128,7 +131,8 @@ class DomainShifter(object):
                 print(f'{path} created!')
         print('Created!')
         
-        k = 0
+#         k = 0 # TODO: fix dict for count
+        k_state = {'Day' : 0, 'Night' : 0}
         with open('log.txt', 'a', encoding="utf-8") as log, open('err.txt', 'a', encoding="utf-8") as err:
             print('-------- shift domains ----------', file=err)
             print('-------- shift domains ----------', file=log)
@@ -139,11 +143,15 @@ class DomainShifter(object):
                 src = os.path.join(base, name)
                 is_shifted = False
                 
-                k += 1
-                if k % 2 == 0: #TODO: add domain split
-                    domain_type = 'Test'
+                if row[col_state] == 'Twilight':
+                    continue
+                s = row[col_state]
+#                 k += 1
+                k_state[s] += 1
+                if k_state[s] % 100 < train_test_ratio: #TODO: add domain split
+                    domain_type = 'train'
                 else:
-                    domain_type = 'Train'
+                    domain_type = 'test'
 
                 for item in self.domains.items():
                     if row[col_state] in item[1] and item[0][:-1] == domain_type:
@@ -173,3 +181,12 @@ if not domains2data:
     ds.shift_domains(mode)
 else:
     ds.back_data(mode)
+
+
+# if show_errors:
+#     print('Error log:')
+#     !tail -n $show_errors err.txt
+# if show_log:
+#     print('Log:')
+#     !tail -n $show_log log.txt
+# print('Completed!')
