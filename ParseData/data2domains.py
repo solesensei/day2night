@@ -140,21 +140,21 @@ class DomainShifter(object):
                 if i % 1000 == 0:
                     print(i, 'files processed')
                 name = str(row[col_name])
+                state = str(row[col_state])
                 src = os.path.join(base, name)
                 is_shifted = False
                 
-                if row[col_state] == 'Twilight':
+                if state == 'Twilight':
                     continue
-                s = row[col_state]
 #                 k += 1
-                k_state[s] += 1
-                if k_state[s] % 100 < train_test_ratio: #TODO: add domain split
+                k_state[state] += 1
+                if k_state[state] % 100 < train_test_ratio: #TODO: add domain split
                     domain_type = 'train'
                 else:
                     domain_type = 'test'
 
                 for item in self.domains.items():
-                    if row[col_state] in item[1] and item[0][:-1] == domain_type:
+                    if state in item[1] and item[0][:-1] == domain_type:
                         dst = os.path.join(base, item[0])
                         dstname = os.path.join(dst, name)
                         if os.path.exists(src) and (mode == 'move' or not os.path.exists(dstname)):
@@ -169,7 +169,7 @@ class DomainShifter(object):
             for root, sdir, _ in os.walk(self.dataset):
                 for folder in sdir:
                     if folder in self.domains.keys():
-                        for r, _, files in os.walk(os.path.join(root, folder)):
+                        for _, _, files in os.walk(os.path.join(root, folder)):
                             nfile = len(files)
                             print(f'Files in domain {folder}: {nfile}')
                             print(f'Files in domain {folder}: {nfile}', file=log)
@@ -183,10 +183,10 @@ else:
     ds.back_data(mode)
 
 
-# if show_errors:
-#     print('Error log:')
-#     !tail -n $show_errors err.txt
-# if show_log:
-#     print('Log:')
-#     !tail -n $show_log log.txt
-# print('Completed!')
+if show_errors:
+    print('Error log:')
+    !tail -n $show_errors err.txt
+if show_log:
+    print('Log:')
+    !tail -n $show_log log.txt
+print('Completed!')
