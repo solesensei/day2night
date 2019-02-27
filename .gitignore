@@ -14,3 +14,7 @@
 *.aux
 *.fdb_latexmk
 *.log
+
+# Folders
+Classificator/data/
+datasets/nexet/
