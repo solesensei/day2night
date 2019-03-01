@@ -40,13 +40,13 @@ def main():
         df.iloc[0:0]
         print(f'{root} processed!')
     
-    print('Building hostograms...')
+    print('Building histograms...')
     plt.hist(hist_values, bins=180)
-    plt.savefig("hostogram180")
+    plt.savefig("histogram180")
     plt.hist(hist_values, bins=60)
-    plt.savefig("hostogram60")
+    plt.savefig("histogram60")
     plt.hist(hist_values, bins=20)
-    plt.savefig("hostogram20")
+    plt.savefig("histogram20")
     
     print('Saving data to .csv')
     df.to_csv("file.csv", index=False, sep=',', encoding='utf8')
