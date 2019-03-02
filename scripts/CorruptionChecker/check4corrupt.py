@@ -3,8 +3,8 @@ import os, sys
 from shutil import move
 from PIL import Image
 
-datapath = '/content/drive/datasets/nexet/nexet_2017_1/' # path to dataset directory
-curr_dir = '/content/drive/datasets/nexet/corrupted'
+datapath = '/mnt/W/prj/data/nexet/nexet_2017_1/' # path to dataset directory
+curr_dir = '/mnt/W/prj/data/nexet/corrupted'
 
 if not os.path.exists(curr_dir):
     os.mkdir(curr_dir)

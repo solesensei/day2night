@@ -5,10 +5,10 @@ import pandas as pd
 import os, sys
 from shutil import copy, move
 
-os.chdir('/content/drive/datasets/nexet')
+# os.chdir('/content/drive/datasets/nexet')
 # ------------------------ Variables ------------------------ 
-datapath = '/content/drive/datasets/nexet/nexet_2017_1/' # path to dataset directory
-csvfile = '/content/drive/datasets/nexet/train.csv' # path to csv file
+datapath = '/mnt/W/prj/data/nexet/nexet_2017_1/' # path to dataset directory
+csvfile = '/mnt/W/prj/data/nexet/train.csv' # path to csv file
 col_name = 'image_filename' # column name with dataset's filenames
 col_state = 'lighting' # column name with dataset's states 
 domains = {

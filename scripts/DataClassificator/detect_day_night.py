@@ -5,7 +5,7 @@ import pandas as pd
 import matplotlib.pyplot as plt
 
 # ------------- Parametrs -------------
-img_root = "./data/bdd100k/"
+img_root = "/mnt/W/prj/data/nexet/"
 # -------------------------------------
 
 hist_values = []
@@ -29,12 +29,15 @@ def main():
     
     for root, _, images in os.walk(img_root):
         print(f'{root} processing...')
-        for i, img in enumerate(images):
+        i = 0 
+        for img in images:
             if i % 100 == 0:
                 print(f'{i * 100 // len(images)}% processed', end='\r')
-            path_to_img = os.path.join(root, img)
-            time = detect_time(path_to_img)
-            df = df.append({"pathname" : path_to_img, "time" : time}, ignore_index=True)
+            if img.endswith(('.jpg', '.png', '.jpeg')):
+                i += 1
+                path_to_img = os.path.join(root, img)
+                time = detect_time(path_to_img)
+                df = df.append({"pathname" : path_to_img, "time" : time}, ignore_index=True)
         print(f'Append {i} lines to csv...', end='\r')
         df.to_csv("file.csv", index=False, sep=',', encoding='utf8')
         df.iloc[0:0]
