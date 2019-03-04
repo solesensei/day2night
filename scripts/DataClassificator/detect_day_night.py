@@ -34,8 +34,9 @@ def compare_with_previous(csv):
     with open('diffs.csv', 'a') as diff:
         merged = pd.merge(old, new, suffixes=('_was', '_now'), on=['image_filename'], how='inner')
         merged['status'] =  np.where((merged['lighting_was'] == merged['lighting_now']), True, False)
-        merged = merged.loc[merged['status'] == False]
-        del merged['status']
+        merged = merged[(merged.status == False) & (merged.lighting_was != 'Twilight')]
+        merged = merged[['image_filename','lighting_was', 'lighting_now', 'pixels_light']]
+        merged.pixels_light = merged.pixels_light.round()
         print(f'{len(merged)} dismatches detected! Writing to diffs.csv')
         merged.to_csv(diff, index=False, sep=',', encoding='utf8')
     print('Compared!')
