@@ -7,8 +7,8 @@ from shutil import copy, move
 
 # os.chdir('/content/drive/datasets/nexet')
 # ------------------------ Variables ------------------------ 
-datapath = '/mnt/W/prj/data/nexet/nexet_2017_1/' # path to dataset directory
-csvfile = '/mnt/W/prj/data/nexet/train.csv' # path to csv file
+datapath = '/mnt/w/prj/data/nexet/nexet_2017_1/' # path to dataset directory
+csvfile = '/mnt/w/prj/data/nexet/train.csv' # path to csv file
 col_name = 'image_filename' # column name with dataset's filenames
 col_state = 'lighting' # column name with dataset's states 
 domains = {
@@ -183,10 +183,4 @@ else:
     ds.back_data(mode)
 
 
-if show_errors:
-    print('Error log:')
-    !tail -n $show_errors err.txt
-if show_log:
-    print('Log:')
-    !tail -n $show_log log.txt
 print('Completed!')
