@@ -17,13 +17,11 @@ domains = {
             'testA' : 'Day',
             'testB' : 'Night'
           }  # making domain directories {Domain_Name : States}
-mode = 'move' # 'move' | 'copy' all files from dataset folder to domains
-domains2data = False # set True to shift all files back to datapath
 # -----------------------------------------------------------
  
 # ------------------------ Dynamic Variables ------------------------ 
 mode = "move" #@param ["move", "copy", "none"]
-domains2data = True #@param {type:"boolean"}
+domains2data = False #@param {type:"boolean"}
 show_errors = 5 #@param {type:"slider", min:0, max:100, step:1}
 show_log = 10 #@param {type:"slider", min:0, max:100, step:1}
 train_test_ratio = 90 #@param {type:"slider", min:5, max:95, step:5}
