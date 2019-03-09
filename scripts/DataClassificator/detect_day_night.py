@@ -5,9 +5,9 @@ import pandas as pd
 import matplotlib.pyplot as plt
 
 # ------------- Parametrs -------------
-img_root = "/mnt/w/prj/data/nexet/"
-csv_new = "nexet_builded.csv"
-csv_old = "train.csv" 
+img_root = "/mnt/w/prj/data/frames_night/"
+csv_new = "frames_night.csv"
+csv_old = "" 
 col_names = ['image_filename', 'lighting', 'pixels_light']
 # -------------------------------------
 
@@ -73,8 +73,9 @@ def main():
     print(f'Saving data to {csv_new}')
     df.to_csv(csv_new, index=False, sep=',', encoding='utf8')
     
-    print(f'Comparing with {csv_old}')
-    compare_with_previous(csv_old)
+    if csv_old:
+        print(f'Comparing with {csv_old}')
+        compare_with_previous(csv_old)
 
     print('Completed')
 
