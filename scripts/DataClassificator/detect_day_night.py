@@ -5,8 +5,8 @@ import pandas as pd
 import matplotlib.pyplot as plt
 
 # ------------- Parametrs -------------
-img_root = "/mnt/w/prj/data/frames_night/"
-csv_new = "frames_night.csv"
+img_root = "/mnt/w/prj/data/frames_day/"
+csv_new = "frames_day.csv"
 csv_old = "" 
 col_names = ['image_filename', 'lighting', 'pixels_light']
 # -------------------------------------
