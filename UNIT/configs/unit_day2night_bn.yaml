@@ -2,9 +2,9 @@
 # Licensed under the CC BY-NC-SA 4.0 license (https://creativecommons.org/licenses/by-nc-sa/4.0/legalcode).
 
 # logger options
-image_save_iter: 500        # How often do you want to save output images during training
+image_save_iter: 5000        # How often do you want to save output images during training
 image_display_iter: 10000       # How often do you want to display output images during training
-display_size: 16              # How many images do you want to display each time
+display_size: 8              # How many images do you want to display each time
 snapshot_save_iter: 500     # How often do you want to save trained models
 log_iter: 10                  # How often do you want to log the training stats
 
@@ -38,7 +38,7 @@ gen:
   pad_type: reflect           # padding type [zero/reflect]
 dis: 
   dim: 64                     # number of filters in the bottommost layer
-  norm: ln                  # normalization layer [none/bn/in/ln]
+  norm: bn                  # normalization layer [none/bn/in/ln]
   activ: lrelu                # activation function [relu/lrelu/prelu/selu/tanh]
   n_layer: 4                  # number of layers in D
   gan_type: lsgan             # GAN loss [lsgan/nsgan]
