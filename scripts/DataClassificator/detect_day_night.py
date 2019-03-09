@@ -5,8 +5,8 @@ import pandas as pd
 import matplotlib.pyplot as plt
 
 # ------------- Parametrs -------------
-img_root = "/mnt/w/prj/data/frames_day/"
-csv_new = "frames_day.csv"
+img_root = "/mnt/w/prj/data/bdd100k/"
+csv_new = "bdd100k_train.csv"
 csv_old = "" 
 col_names = ['image_filename', 'lighting', 'pixels_light']
 # -------------------------------------
@@ -45,6 +45,9 @@ def compare_with_previous(csv):
 def main():
     
     df = pd.DataFrame(columns=col_names)
+    
+    if not os.path.exists(img_root):
+        raise BaseException(f'No data {img_root} path found')
 
     for root, _, images in os.walk(img_root):
         print(f'{root} processing...')
@@ -62,13 +65,14 @@ def main():
         df.iloc[0:0]
         print(f'{root} processed!')
     
-    print('Building histograms...')
-    plt.hist(hist_values, bins=180)
-    plt.savefig("histogram180")
-    plt.hist(hist_values, bins=60)
-    plt.savefig("histogram60")
-    plt.hist(hist_values, bins=20)
-    plt.savefig("histogram20")
+    if hist_values:
+        print('Building histograms...')
+        plt.hist(hist_values, bins=180)
+        plt.savefig("histogram180")
+        plt.hist(hist_values, bins=60)
+        plt.savefig("histogram60")
+        plt.hist(hist_values, bins=20)
+        plt.savefig("histogram20")
     
     print(f'Saving data to {csv_new}')
     df.to_csv(csv_new, index=False, sep=',', encoding='utf8')
