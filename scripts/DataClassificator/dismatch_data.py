@@ -25,14 +25,14 @@ print(already_processed)
 print(num - already_processed, 'processed', end='\r')
 for r,d,f in os.walk(datadir):
     for i, file in enumerate(f):
-        print(r, file)
         if file.endswith('.jpg') and df.image_filename.str.contains(file).any():
             row = df.loc[df.image_filename == file]
             dst = f'dismatch/{str(row.lighting_was.values[0]).lower()}/{file[:-4]}_{row.lighting_now.values[0]}_{row.pixels_light.values[0]}.jpg'
-            src = os.path.join(r, file)
             df = df[~df.image_filename.str.contains(file)]
             print(f'{num - len(df)} processed', end='\r')
-            copy(src, dst)
+            if not os.path.exists(dst):
+                src = os.path.join(r, file)
+                copy(src, dst)
             
 print(f'{num - len(df)} moved! {len(df)} last')
 
