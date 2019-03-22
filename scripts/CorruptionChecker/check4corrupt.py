@@ -3,8 +3,8 @@ import os, sys
 from shutil import move
 from PIL import Image
 
-datapath = '/mnt/w/prj/data/bdd100k/images' # path to dataset directory
-corr_dir = '/mnt/w/prj/data/bdd100k/corrupted_images'
+datapath = '/mnt/w/prj/data/nexet/nexet_2017_1' # path to dataset directory
+corr_dir = '/mnt/w/prj/data/nexet/corrupted'
 
 if not os.path.exists(corr_dir):
     print(f'Creating {os.path.abspath(corr_dir)} directory')
@@ -15,9 +15,11 @@ with open('log.txt', 'a') as log:
     corr_count = {}
     for root, _, files in os.walk(datapath):
         print(f'Checking {root} : ', file=log, end='')
-        print(f'Checking {root} : ', end='')
+        print(f'Checking {root} : ')
         corr_count[root] = 0
-        for file in files:
+        for i, file in enumerate(files):
+            if i % 100 == 0:
+                print(f'{i} processed {corr_count[root]} corrupted', end='\r')
             try:
                 src = os.path.join(root, file)
                 img = Image.open(src) 
