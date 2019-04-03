@@ -1,36 +1,37 @@
 #@title Shift Domains (nexet dataset)
 #@markdown Script parsing dataset folder to several domains by states from csv file
 
-import pandas as pd
-import os, sys
+import os
 from shutil import copy, move
+import pandas as pd
 
 # os.chdir('/content/drive/datasets/nexet')
-# ------------------------ Variables ------------------------ 
-datapath = '/mnt/w/prj/data/nexet/nexet_2017_1/' # path to dataset directory
-csvfile = '/mnt/w/prj/data/nexet/train.csv' # path to csv file
-col_name = 'image_filename' # column name with dataset's filenames
-col_state = 'lighting' # column name with dataset's states 
+# ------------------------ Variables ------------------------
+datapath = '/mnt/w/prj/data/nexet/nexet_2017_1/'  # path to dataset directory
+csvfile = '/mnt/w/prj/data/nexet/train.csv'  # path to csv file
+col_name = 'image_filename'  # column name with dataset's filenames
+col_state = 'lighting'  # column name with dataset's states
 domains = {
-            'trainA' : 'Day',
-            'trainB' : 'Night',
-            'testA' : 'Day',
-            'testB' : 'Night'
-          }  # making domain directories {Domain_Name : States}
+    'trainA': 'Day',
+    'trainB': 'Night',
+    'testA': 'Day',
+    'testB': 'Night'
+}  # making domain directories {Domain_Name : States}
 # -----------------------------------------------------------
- 
-# ------------------------ Dynamic Variables ------------------------ 
-mode = "move" #@param ["move", "copy", "none"]
-domains2data = False #@param {type:"boolean"}
-show_errors = 5 #@param {type:"slider", min:0, max:100, step:1}
-show_log = 10 #@param {type:"slider", min:0, max:100, step:1}
-train_test_ratio = 90 #@param {type:"slider", min:5, max:95, step:5}
+
+# ------------------------ Dynamic Variables ------------------------
+mode = "move"  #@param ["move", "copy", "none"]
+domains2data = False  #@param {type:"boolean"}
+show_errors = 5  #@param {type:"slider", min:0, max:100, step:1}
+show_log = 10  #@param {type:"slider", min:0, max:100, step:1}
+train_test_ratio = 90  #@param {type:"slider", min:5, max:95, step:5}
+
 # -----------------------------------------------------------
 
 
 class DomainShifter(object):
     """
-        Class creating dataset's domains from csv 
+        Class creating dataset's domains from csv
     """
 
     def get_states(self, column):
@@ -39,12 +40,12 @@ class DomainShifter(object):
         print(f'Searching states in {column}...')
         states = set()
         for state in self.csv[column]:
-            states.add(state) 
+            states.add(state)
         print("States:", *states)
         return states
 
     def __init__(self, data, file, domains, col_name, col_state, sep=','):
-        
+
         # Check datasets paths
         if not os.path.exists(data):
             raise FileNotFoundError(f"No dataset '{os.path.abspath(data)}' folder found!")
@@ -58,15 +59,15 @@ class DomainShifter(object):
                     self.csv[col]
             except:
                 raise Exception(f'Column name "{col}" is not found in {self.file}!')
-        
+
         # Initialize class local variables
-        self.dataset = data # dataset path
-        self.file = file # csv file path
-        self.domains = domains # domains to create
-        self.csv = pd.read_csv(file, sep=sep, encoding='utf8') # read csv with pandas
-        check_cols(col_name, col_state) # check on column names exists
-        self.states = self.get_states(col_state) # get all states from csv
-    
+        self.dataset = data  # dataset path
+        self.file = file  # csv file path
+        self.domains = domains  # domains to create
+        self.csv = pd.read_csv(file, sep=sep, encoding='utf8')  # read csv with pandas
+        check_cols(col_name, col_state)  # check on column names exists
+        self.states = self.get_states(col_state)  # get all states from csv
+
     def back_data(self, mode='move'):
         """ Backing up data from domain folders to dataset folder """
         if mode == 'copy':
@@ -77,7 +78,7 @@ class DomainShifter(object):
             raise Exception(f'Shift Domains: no {mode} found!')
 
         print('Backup shifting starts...')
-        print(f'Mode: {shift.__name__}')  
+        print(f'Mode: {shift.__name__}')
 
         with open('log.txt', 'a', encoding="utf-8") as log, open('err.txt', 'a', encoding="utf-8") as err:
             print('-------- back data ----------', file=log)
@@ -97,12 +98,11 @@ class DomainShifter(object):
                                 dst = os.path.join(root, name)
                                 if mode == 'move' or not os.path.exists(dst):
                                     shift(src, dst)
-                        print(f'Parsed: {folder}') 
+                        print(f'Parsed: {folder}')
                         print(f'Parsed: {folder}', file=log)
                     else:
                         print(f'Not domain folder {folder} found')
                         print(f'Not domain folder {folder} found', file=log)
-
 
     def shift_domains(self, mode='move'):
         """ Creating domain folders and parsing dataset folder by csv """
@@ -118,7 +118,7 @@ class DomainShifter(object):
         domain_split = {}
         for state in self.states:
             domain_split[state] = sum(state in v for v in self.domains.values())
-        
+
         # Creating directories
         print('Creating directories...')
         base = self.dataset
@@ -128,9 +128,9 @@ class DomainShifter(object):
                 os.mkdir(path)
                 print(f'{path} created!')
         print('Created!')
-        
-#         k = 0 # TODO: fix dict for count
-        k_state = {'Day' : 0, 'Night' : 0}
+
+        k = 0  # TODO: fix dict for count
+        k_state = {'Day': 0, 'Night': 0}
         with open('log.txt', 'a', encoding="utf-8") as log, open('err.txt', 'a', encoding="utf-8") as err:
             print('-------- shift domains ----------', file=err)
             print('-------- shift domains ----------', file=log)
@@ -141,12 +141,12 @@ class DomainShifter(object):
                 state = str(row[col_state])
                 src = os.path.join(base, name)
                 is_shifted = False
-                
+
                 if state == 'Twilight':
                     continue
 #                 k += 1
                 k_state[state] += 1
-                if k_state[state] % 100 < train_test_ratio: #TODO: add domain split
+                if k_state[state] % 100 < train_test_ratio:  #TODO: add domain split
                     domain_type = 'train'
                 else:
                     domain_type = 'test'
@@ -173,12 +173,12 @@ class DomainShifter(object):
                             print(f'Files in domain {folder}: {nfile}', file=log)
         print('Shifiting completed!')
 
+
 # Main
 ds = DomainShifter(datapath, csvfile, domains, col_name, col_state)
 if not domains2data:
     ds.shift_domains(mode)
 else:
     ds.back_data(mode)
-
 
 print('Completed!')

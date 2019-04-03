@@ -7,23 +7,24 @@ import matplotlib.pyplot as plt
 # ------------- Parametrs -------------
 img_root = "/mnt/w/prj/data/bdd100k/"
 csv_new = "bdd100k_train.csv"
-csv_old = "" 
+csv_old = ""
 col_names = ['image_filename', 'lighting', 'pixels_light']
 # -------------------------------------
 
 hist_values = []
+
+
 def detect_time(img):
     global hist_values
     frame = cv2.imread(img)
-    n = np.sum(np.sum(frame))/(frame.shape[0]*frame.shape[1]*frame.shape[2])
+    n = np.sum(np.sum(frame)) / (frame.shape[0] * frame.shape[1] * frame.shape[2])
     hist_values.append(round(n))
 
     if n > 68.0:
         return 'Day', round(n)
-    elif 60 < n <= 68:
+    if 60 < n <= 68:
         return 'Twilight', round(n)
-    else:
-        return 'Night', round(n)
+    return 'Night', round(n)
 
 
 def compare_with_previous(csv):
@@ -33,9 +34,9 @@ def compare_with_previous(csv):
     print('------------')
     with open('diffs.csv', 'a') as diff:
         merged = pd.merge(old, new, suffixes=('_was', '_now'), on=['image_filename'], how='inner')
-        merged['status'] =  np.where((merged['lighting_was'] == merged['lighting_now']), True, False)
-        merged = merged[(merged.status == False) & (merged.lighting_was != 'Twilight')]
-        merged = merged[['image_filename','lighting_was', 'lighting_now', 'pixels_light']]
+        merged['status'] = np.where((merged['lighting_was'] == merged['lighting_now']), True, False)
+        merged = merged[(not merged.status) & (merged.lighting_was != 'Twilight')]
+        merged = merged[['image_filename', 'lighting_was', 'lighting_now', 'pixels_light']]
         merged.pixels_light = merged.pixels_light.round()
         print(f'{len(merged)} dismatches detected! Writing to diffs.csv')
         merged.to_csv(diff, index=False, sep=',', encoding='utf8')
@@ -43,15 +44,15 @@ def compare_with_previous(csv):
 
 
 def main():
-    
+
     df = pd.DataFrame(columns=col_names)
-    
+
     if not os.path.exists(img_root):
         raise BaseException(f'No data {img_root} path found')
 
     for root, _, images in os.walk(img_root):
         print(f'{root} processing...')
-        i = 0 
+        i = 0
         for img in images:
             if i % 100 == 0:
                 print(f'{i * 100 // len(images)}% processed', end='\r')
@@ -59,12 +60,12 @@ def main():
                 i += 1
                 path_to_img = os.path.join(root, img)
                 time, light = detect_time(path_to_img)
-                df = df.append({"image_filename" : img, "lighting" : time, "pixels_light" : light}, ignore_index=True)
+                df = df.append({"image_filename": img, "lighting": time, "pixels_light": light}, ignore_index=True)
         print(f'Append {i} lines to {csv_new}...', end='\r')
         df.to_csv(csv_new, index=False, sep=',', encoding='utf8')
         df.iloc[0:0]
         print(f'{root} processed!')
-    
+
     if hist_values:
         print('Building histograms...')
         plt.hist(hist_values, bins=180)
@@ -73,10 +74,10 @@ def main():
         plt.savefig("histogram60")
         plt.hist(hist_values, bins=20)
         plt.savefig("histogram20")
-    
+
     print(f'Saving data to {csv_new}')
     df.to_csv(csv_new, index=False, sep=',', encoding='utf8')
-    
+
     if csv_old:
         print(f'Comparing with {csv_old}')
         compare_with_previous(csv_old)

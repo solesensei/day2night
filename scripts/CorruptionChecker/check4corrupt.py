@@ -1,9 +1,9 @@
 # Script checking and moving corrupted images to special directory
-import os, sys
+import os
 from shutil import move
 from PIL import Image
 
-datapath = '/mnt/w/prj/data/nexet/nexet_2017_1' # path to dataset directory
+datapath = '/mnt/w/prj/data/nexet/nexet_2017_1'  # path to dataset directory
 corr_dir = '/mnt/w/prj/data/nexet/corrupted'
 
 if not os.path.exists(corr_dir):
@@ -22,7 +22,7 @@ with open('log.txt', 'a') as log:
                 print(f'{i} processed {corr_count[root]} corrupted', end='\r')
             try:
                 src = os.path.join(root, file)
-                img = Image.open(src) 
+                img = Image.open(src)
                 img.verify()
             except (IOError, SyntaxError) as e:
                 corr_count[root] += 1

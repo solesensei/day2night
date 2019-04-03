@@ -1,6 +1,6 @@
-import os, sys
-import pandas as pd
+import os
 from shutil import copy, move
+import pandas as pd
 
 csv = './nexet_diffs.csv'
 datadir = '/mnt/w/prj/data/nexet/nexet_2017_1/trainA'
@@ -18,13 +18,13 @@ if not os.path.isdir(datadir + '/dismatch/twilight'):
 
 num_all = len(df)
 already_processed = 0
-for r,_,f in os.walk(datadir + '/dismatch'):
+for r, _, f in os.walk(datadir + '/dismatch'):
     print(r, len(f))
     already_processed += len(f)
 print('Already processed:', already_processed)
 with open('log.txt', 'a', encoding="utf-8") as log:
     print(f'---- start log ----', file=log)
-    for r,d,f in os.walk(datadir):
+    for r, d, f in os.walk(datadir):
         for i, file in enumerate(f):
             if file.endswith('.jpg') and df.image_filename.str.contains(file).any():
                 row = df.loc[df.image_filename == file]
@@ -32,10 +32,10 @@ with open('log.txt', 'a', encoding="utf-8") as log:
                 df = df[~df.image_filename.str.contains(file)]
                 print(f'{num_all - len(df)} processed', end='\r')
                 if not os.path.exists(dst):
-                    print(f'{file[:-4]}\t{str(row.lighting_was.values[0]).lower()}->{row.lighting_now.values[0]} [{row.pixels_light.values[0]}]', file=log)
+                    lwas = str(row.lighting_was.values[0]).lower()
+                    lnow = row.lighting_now.values[0]
+                    print(f'{file[:-4]}\t{lwas}->{lnow} [{row.pixels_light.values[0]}]', file=log)
                     src = os.path.join(r, file)
                     move(src, dst)
-            
-print(f'{num_all - len(df)} moved! {len(df)} last')
 
-    
+print(f'{num_all - len(df)} moved! {len(df)} last')
