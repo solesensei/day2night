@@ -4,7 +4,8 @@ ENV ANACONDA /opt/anaconda
 ENV PATH $ANACONDA/bin:$PATH
 ENV TZ=Europe/Moscow
 RUN ln -snf /usr/share/zoneinfo/$TZ /etc/localtime && echo $TZ > /etc/timezone
-RUN apt-get update && apt-get install -y -qq --no-install-recommends \
+RUN apt-get update && apt-get install -y --no-install-recommends \
+         apt-utils \
          wget \
          libopencv-dev \
          python-opencv \
