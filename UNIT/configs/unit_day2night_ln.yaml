@@ -38,7 +38,7 @@ gen:
   pad_type: reflect           # padding type [zero/reflect]
 dis: 
   dim: 64                     # number of filters in the bottommost layer
-  norm: none                  # normalization layer [none/bn/in/ln]
+  norm: ln                  # normalization layer [none/bn/in/ln]
   activ: lrelu                # activation function [relu/lrelu/prelu/selu/tanh]
   n_layer: 4                  # number of layers in D
   gan_type: lsgan             # GAN loss [lsgan/nsgan]
