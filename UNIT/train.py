@@ -17,14 +17,21 @@ import sys
 import tensorboardX
 import shutil
 
+
+
 parser = argparse.ArgumentParser()
 parser.add_argument('--config', type=str, default='configs/unit_summer2winter_yosemite256_folder.yaml', help='Path to the config file.')
 parser.add_argument('--output_path', type=str, default='.', help="outputs path")
 parser.add_argument("--resume", action="store_true")
 parser.add_argument('--trainer', type=str, default='UNIT', help="MUNIT|UNIT")
+parser.add_argument('--devices')
 opts = parser.parse_args()
 
 cudnn.benchmark = True
+
+# Choose device to run
+os.environ["CUDA_DEVICE_ORDER"]="PCI_BUS_ID" 
+os.environ["CUDA_VISIBLE_DEVICES"]="1"
 
 # Load experiment setting
 config = get_config(opts.config)
