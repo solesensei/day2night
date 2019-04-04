@@ -2,6 +2,8 @@ FROM nvidia/cuda:10.1-cudnn7-runtime-ubuntu18.04
 # Set anaconda path
 ENV ANACONDA /opt/anaconda
 ENV PATH $ANACONDA/bin:$PATH
+ENV TZ=Europe/Moscow
+RUN ln -snf /usr/share/zoneinfo/$TZ /etc/localtime && echo $TZ > /etc/timezone
 RUN apt-get update && apt-get install -y -qq --no-install-recommends \
          wget \
          libopencv-dev \
