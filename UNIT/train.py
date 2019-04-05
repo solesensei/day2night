@@ -107,7 +107,7 @@ while True:
         # Save network weights
         if (iterations + 1) % config['snapshot_save_iter'] == 0:
             print(f'Saving pre-trained checkpoint to {checkpoint_directory}')
-            trainer.save(checkpoint_directory, iterations)
+            trainer.save(checkpoint_directory, iterations, config['snapshot_smart_override'])
 
         iterations += 1
         if iterations >= max_iter:

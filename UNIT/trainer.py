@@ -189,8 +189,41 @@ class MUNIT_Trainer(nn.Module):
         print('Resume from iteration %d' % iterations)
         return iterations
 
-    def save(self, snapshot_dir, iterations):
+    def snap_clean(self, snap_dir, iterations):
+        # Cleaning snapshot directory from old files
+        if not os.path.exists(snap_dir):
+            return None
+        
+        list_models = [os.path.join(snap_dir, f) for f in os.listdir(snap_dir) if ".pt" in f]
+        
+        if list_models is None:
+            return None
+
+        list_models.sort()
+        first_iter = list_models[0]
+        if first_iter >= iterations - 10000:
+            return
+        marked_clean = []
+        for i, model in enumerate(list_models):
+            m_iter = int(model[-11:-3])
+            if i == 0:
+                m_prev = 0
+                continue
+            if m_iter > iterations - 10000:
+                break
+            if m_iter - m_prev < 10000:
+                marked_clean.append(model)
+            while m_iter - m_prev >= 10000:
+                m_prev += 10000
+        
+        print(f'Cleaning snapshots: {marked_clean}')
+        for f in marked_clean:
+            os.remove(f)
+
+    def save(self, snapshot_dir, iterations, smart_override):
         # Save generators, discriminators, and optimizers
+        if smart_override:
+            self.snap_clean(snapshot_dir, iterations+1)
         gen_name = os.path.join(snapshot_dir, 'gen_%08d.pt' % (iterations + 1))
         dis_name = os.path.join(snapshot_dir, 'dis_%08d.pt' % (iterations + 1))
         opt_name = os.path.join(snapshot_dir, 'optimizer.pt')

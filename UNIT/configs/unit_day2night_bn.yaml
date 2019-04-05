@@ -6,6 +6,7 @@ image_save_iter: 1000        # How often do you want to save output images durin
 image_display_iter: 10000       # How often do you want to display output images during training
 display_size: 8              # How many images do you want to display each time
 snapshot_save_iter: 1000     # How often do you want to save trained models
+snapshot_smart_override: True # Use to smart cleaning old snapshots while clearing  
 log_iter: 10                  # How often do you want to log the training stats
 
 # optimization options
