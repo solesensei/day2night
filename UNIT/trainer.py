@@ -228,45 +228,6 @@ class MUNIT_Trainer(nn.Module):
         for f in marked_clean:
             os.remove(f)
 
-    def snap_clean(self, snap_dir, iterations):
-        # Cleaning snapshot directory from old files
-        if not os.path.exists(snap_dir):
-            return None
-        
-        gen_models = [os.path.join(snap_dir, f) for f in os.listdir(snap_dir) if "gen" in f and ".pt" in f]
-        dis_models = [os.path.join(snap_dir, f) for f in os.listdir(snap_dir) if "dis" in f and ".pt" in f]
-        
-        gen_models.sort()
-        dis_models.sort()
-        marked_clean = []
-        for i, model in enumerate(gen_models):
-            m_iter = int(model[-11:-3])
-            if i == 0:
-                m_prev = 0
-                continue
-            if m_iter > iterations - 10000:
-                break
-            if m_iter - m_prev < 10000:
-                marked_clean.append(model)
-            while m_iter - m_prev >= 10000:
-                m_prev += 10000
-        
-        for i, model in enumerate(dis_models):
-            m_iter = int(model[-11:-3])
-            if i == 0:
-                m_prev = 0
-                continue
-            if m_iter > iterations - 10000:
-                break
-            if m_iter - m_prev < 10000:
-                marked_clean.append(model)
-            while m_iter - m_prev >= 10000:
-                m_prev += 10000
-        
-        print(f'Cleaning snapshots: {marked_clean}')
-        for f in marked_clean:
-            os.remove(f)
-
     def save(self, snapshot_dir, iterations, smart_override):
         # Save generators, discriminators, and optimizers
         gen_name = os.path.join(snapshot_dir, 'gen_%08d.pt' % (iterations + 1))
@@ -449,6 +410,45 @@ class UNIT_Trainer(nn.Module):
         self.gen_scheduler = get_scheduler(self.gen_opt, hyperparameters, iterations)
         print('Resume from iteration %d' % iterations)
         return iterations
+
+    def snap_clean(self, snap_dir, iterations):
+        # Cleaning snapshot directory from old files
+        if not os.path.exists(snap_dir):
+            return None
+        
+        gen_models = [os.path.join(snap_dir, f) for f in os.listdir(snap_dir) if "gen" in f and ".pt" in f]
+        dis_models = [os.path.join(snap_dir, f) for f in os.listdir(snap_dir) if "dis" in f and ".pt" in f]
+        
+        gen_models.sort()
+        dis_models.sort()
+        marked_clean = []
+        for i, model in enumerate(gen_models):
+            m_iter = int(model[-11:-3])
+            if i == 0:
+                m_prev = 0
+                continue
+            if m_iter > iterations - 10000:
+                break
+            if m_iter - m_prev < 10000:
+                marked_clean.append(model)
+            while m_iter - m_prev >= 10000:
+                m_prev += 10000
+        
+        for i, model in enumerate(dis_models):
+            m_iter = int(model[-11:-3])
+            if i == 0:
+                m_prev = 0
+                continue
+            if m_iter > iterations - 10000:
+                break
+            if m_iter - m_prev < 10000:
+                marked_clean.append(model)
+            while m_iter - m_prev >= 10000:
+                m_prev += 10000
+        
+        print(f'Cleaning snapshots: {marked_clean}')
+        for f in marked_clean:
+            os.remove(f)
 
     def save(self, snapshot_dir, iterations, smart_override):
         # Save generators, discriminators, and optimizers
