@@ -200,9 +200,6 @@ class MUNIT_Trainer(nn.Module):
             return None
 
         list_models.sort()
-        first_iter = int(list_models[0])
-        if first_iter >= iterations - 10000:
-            return
         marked_clean = []
         for i, model in enumerate(list_models):
             m_iter = int(model[-11:-3])
