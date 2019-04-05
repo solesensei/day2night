@@ -194,14 +194,25 @@ class MUNIT_Trainer(nn.Module):
         if not os.path.exists(snap_dir):
             return None
         
-        list_models = [os.path.join(snap_dir, f) for f in os.listdir(snap_dir) if ".pt" in f]
+        gen_models = [os.path.join(snap_dir, f) for f in os.listdir(snap_dir) if "gen" in f and ".pt" in f]
+        dis_models = [os.path.join(snap_dir, f) for f in os.listdir(snap_dir) if "dis" in f and ".pt" in f]
         
-        if list_models is None:
-            return None
-
-        list_models.sort()
+        gen_models.sort()
+        dis_models.sort()
         marked_clean = []
-        for i, model in enumerate(list_models):
+        for i, model in enumerate(gen_models):
+            m_iter = int(model[-11:-3])
+            if i == 0:
+                m_prev = 0
+                continue
+            if m_iter > iterations - 10000:
+                break
+            if m_iter - m_prev < 10000:
+                marked_clean.append(model)
+            while m_iter - m_prev >= 10000:
+                m_prev += 10000
+        
+        for i, model in enumerate(dis_models):
             m_iter = int(model[-11:-3])
             if i == 0:
                 m_prev = 0
