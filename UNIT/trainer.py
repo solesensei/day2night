@@ -222,15 +222,14 @@ class MUNIT_Trainer(nn.Module):
 
     def save(self, snapshot_dir, iterations, smart_override):
         # Save generators, discriminators, and optimizers
-        if smart_override:
-            self.snap_clean(snapshot_dir, iterations+1)
         gen_name = os.path.join(snapshot_dir, 'gen_%08d.pt' % (iterations + 1))
         dis_name = os.path.join(snapshot_dir, 'dis_%08d.pt' % (iterations + 1))
         opt_name = os.path.join(snapshot_dir, 'optimizer.pt')
         torch.save({'a': self.gen_a.state_dict(), 'b': self.gen_b.state_dict()}, gen_name)
         torch.save({'a': self.dis_a.state_dict(), 'b': self.dis_b.state_dict()}, dis_name)
         torch.save({'gen': self.gen_opt.state_dict(), 'dis': self.dis_opt.state_dict()}, opt_name)
-
+        if smart_override:
+            self.snap_clean(snapshot_dir, iterations+1)
 
 class UNIT_Trainer(nn.Module):
     def __init__(self, hyperparameters):
