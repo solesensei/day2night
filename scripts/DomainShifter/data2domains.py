@@ -2,13 +2,15 @@
 #@markdown Script parsing dataset folder to several domains by states from csv file
 
 import os
-from shutil import copy, move
 import pandas as pd
+import numpy as np
+from shutil import copy, move
+
 
 # os.chdir('/content/drive/datasets/nexet')
 # ------------------------ Variables ------------------------
-datapath = '/mnt/w/prj/data/nexet/nexet_2017_1/'  # path to dataset directory
-csvfile = '/mnt/w/prj/data/nexet/train.csv'  # path to csv file
+datapath = '/mnt/w/prj/data/bdd100k/images/100k/train'  # path to dataset directory
+csvfile = '../DataClassificator/bdd100k_train.csv'  # path to csv file
 col_name = 'image_filename'  # column name with dataset's filenames
 col_state = 'lighting'  # column name with dataset's states
 domains = {
@@ -129,8 +131,10 @@ class DomainShifter(object):
                 print(f'{path} created!')
         print('Created!')
 
-        k = 0  # TODO: fix dict for count
-        k_state = {'Day': 0, 'Night': 0}
+        global train_test_ratio
+        train_test_ratio /= 100
+        train_probability = train_test_ratio
+        test_probability = 1 - train_test_ratio
         with open('log.txt', 'a', encoding="utf-8") as log, open('err.txt', 'a', encoding="utf-8") as err:
             print('-------- shift domains ----------', file=err)
             print('-------- shift domains ----------', file=log)
@@ -144,12 +148,8 @@ class DomainShifter(object):
 
                 if state == 'Twilight':
                     continue
-#                 k += 1
-                k_state[state] += 1
-                if k_state[state] % 100 < train_test_ratio:  #TODO: add domain split
-                    domain_type = 'train'
-                else:
-                    domain_type = 'test'
+
+                domain_type = np.random.choice(['train','test'],p=[train_probability, test_probability])
 
                 for item in self.domains.items():
                     if state in item[1] and item[0][:-1] == domain_type:
