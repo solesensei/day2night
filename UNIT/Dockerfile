@@ -29,4 +29,4 @@ RUN rm /tmp/${ANACONDA_VER} -rf
 RUN conda install -y pytorch torchvision cudatoolkit=10.0 -c pytorch
 RUN conda install -y pip yaml -c anaconda
 RUN pip install torchfile
-RUN pip install tensorboard tensorboardX;
+RUN pip install tensorboard tensorboardX tensorflow;
