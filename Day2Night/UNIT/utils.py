@@ -216,6 +216,8 @@ def get_model_list(dirname, key):
     last_model_name = gen_models[-1]
     return last_model_name
 
+def load_resnet18(model_dir):
+    pass
 
 def load_vgg16(model_dir):
     """ Use the model from https://github.com/abhiskk/fast-neural-style/blob/master/neural_style/utils.py """
@@ -232,7 +234,6 @@ def load_vgg16(model_dir):
     vgg = Vgg16()
     vgg.load_state_dict(torch.load(os.path.join(model_dir, 'vgg16.weight')))
     return vgg
-
 
 def vgg_preprocess(batch):
     tensortype = type(batch.data)
