@@ -6,7 +6,6 @@ import pandas as pd
 import numpy as np
 from shutil import copy, move
 
-
 # os.chdir('/content/drive/datasets/nexet')
 # ------------------------ Variables ------------------------
 datapath = '/mnt/w/prj/data/bdd100k/images/100k/train'  # path to dataset directory
@@ -116,10 +115,6 @@ class DomainShifter(object):
             raise Exception(f'Shift Domains: no {mode} found!')
         print('Shifting domains starts...')
         print(f'Mode: {shift.__name__}')
-        # Caclculate splits
-        domain_split = {}
-        for state in self.states:
-            domain_split[state] = sum(state in v for v in self.domains.values())
 
         # Creating directories
         print('Creating directories...')
@@ -135,12 +130,15 @@ class DomainShifter(object):
         train_test_ratio /= 100
         train_probability = train_test_ratio
         test_probability = 1 - train_test_ratio
+        print('Shuffling train.csv...')
+        self.csv = self.csv.sample(frac=1).reset_index(drop=True)
+        print('Shuffled!')
         with open('log.txt', 'a', encoding="utf-8") as log, open('err.txt', 'a', encoding="utf-8") as err:
             print('-------- shift domains ----------', file=err)
             print('-------- shift domains ----------', file=log)
             for i, row in self.csv.iterrows():
                 if i % 1000 == 0:
-                    print(i, 'files processed')
+                    print(i, 'files processed', end='\r')
                 name = str(row[col_name])
                 state = str(row[col_state])
                 src = os.path.join(base, name)
@@ -149,7 +147,7 @@ class DomainShifter(object):
                 if state == 'Twilight':
                     continue
 
-                domain_type = np.random.choice(['train','test'],p=[train_probability, test_probability])
+                domain_type = np.random.choice(['train', 'test'], p=[train_probability, test_probability])
 
                 for item in self.domains.items():
                     if state in item[1] and item[0][:-1] == domain_type:
