@@ -15,7 +15,7 @@ beta2: 0.999                  # Adam parameter
 init: kaiming                 # initialization [gaussian/kaiming/xavier/orthogonal]
 lr: 0.0001                    # initial learning rate
 lr_policy: step               # learning rate scheduler
-step_size: 20000             # how often to decay learning rate
+step_size: 50000             # how often to decay learning rate
 gamma: 0.5                    # how much to decay learning rate
 gan_w: 1                      # weight of adversarial loss
 recon_x_w: 10                 # weight of image reconstruction loss
