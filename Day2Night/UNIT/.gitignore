@@ -1,6 +1,6 @@
 outputs/
 datasets/
-src/models/
+models/
 data/
 logs/
 .idea/
