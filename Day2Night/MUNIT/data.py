@@ -6,7 +6,7 @@ import torch.utils.data as data
 import os.path
 
 def default_loader(path):
-    return Image.open(path).convert('RGB')
+    return Image.open(open(path, 'rb')).convert('RGB')
 
 
 def default_flist_reader(flist):
@@ -91,10 +91,13 @@ def make_dataset(dir):
     assert os.path.isdir(dir), '%s is not a valid directory' % dir
 
     for root, _, fnames in sorted(os.walk(dir)):
-        for fname in fnames:
+        for i, fname in enumerate(fnames):
+            if i % 1000 == 0:
+                print(f'Processed {i} images')
             if is_image_file(fname):
                 path = os.path.join(root, fname)
                 images.append(path)
+        break
 
     return images
 
@@ -104,6 +107,9 @@ class ImageFolder(data.Dataset):
     def __init__(self, root, transform=None, return_paths=False,
                  loader=default_loader):
         imgs = sorted(make_dataset(root))
+
+        print('Images in dataset:', len(imgs))
+        
         if len(imgs) == 0:
             raise(RuntimeError("Found 0 images in: " + root + "\n"
                                "Supported image extensions are: " +

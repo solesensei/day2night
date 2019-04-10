@@ -29,18 +29,16 @@ parser.add_argument('--output_path', type=str, default='.', help="path for logs,
 parser.add_argument('--trainer', type=str, default='MUNIT', help="MUNIT|UNIT")
 opts = parser.parse_args()
 
-
-
 torch.manual_seed(opts.seed)
 torch.cuda.manual_seed(opts.seed)
 if not os.path.exists(opts.output_folder):
     os.makedirs(opts.output_folder)
 
-# Load experiment setting
+print('Load experiment setting')
 config = get_config(opts.config)
 opts.num_style = 1 if opts.style != '' else opts.num_style
 
-# Setup model and data loader
+print('Setup model and data loader')
 config['vgg_model_path'] = opts.output_path
 if opts.trainer == 'MUNIT':
     style_dim = config['gen']['style_dim']
@@ -80,7 +78,7 @@ with torch.no_grad():
     image = Variable(transform(Image.open(opts.input).convert('RGB')).unsqueeze(0).cuda())
     style_image = Variable(transform(Image.open(opts.style).convert('RGB')).unsqueeze(0).cuda()) if opts.style != '' else None
 
-    # Start testing
+    print('Start testing')
     content, _ = encode(image)
 
     if opts.trainer == 'MUNIT':
@@ -106,4 +104,4 @@ with torch.no_grad():
     if not opts.output_only:
         # also save input images
         vutils.save_image(image.data, os.path.join(opts.output_folder, 'input.jpg'), padding=0, normalize=True)
-
+print('Testing complete!') 

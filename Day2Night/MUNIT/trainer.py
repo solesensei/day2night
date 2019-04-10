@@ -189,7 +189,46 @@ class MUNIT_Trainer(nn.Module):
         print('Resume from iteration %d' % iterations)
         return iterations
 
-    def save(self, snapshot_dir, iterations):
+    def snap_clean(self, snap_dir, iterations):
+        # Cleaning snapshot directory from old files
+        if not os.path.exists(snap_dir):
+            return None
+        
+        gen_models = [os.path.join(snap_dir, f) for f in os.listdir(snap_dir) if "gen" in f and ".pt" in f]
+        dis_models = [os.path.join(snap_dir, f) for f in os.listdir(snap_dir) if "dis" in f and ".pt" in f]
+        
+        gen_models.sort()
+        dis_models.sort()
+        marked_clean = []
+        for i, model in enumerate(gen_models):
+            m_iter = int(model[-11:-3])
+            if i == 0:
+                m_prev = 0
+                continue
+            if m_iter > iterations - 10000:
+                break
+            if m_iter - m_prev < 10000:
+                marked_clean.append(model)
+            while m_iter - m_prev >= 10000:
+                m_prev += 10000
+        
+        for i, model in enumerate(dis_models):
+            m_iter = int(model[-11:-3])
+            if i == 0:
+                m_prev = 0
+                continue
+            if m_iter > iterations - 10000:
+                break
+            if m_iter - m_prev < 10000:
+                marked_clean.append(model)
+            while m_iter - m_prev >= 10000:
+                m_prev += 10000
+        
+        print(f'Cleaning snapshots: {marked_clean}')
+        for f in marked_clean:
+            os.remove(f)
+
+    def save(self, snapshot_dir, iterations, smart_override):
         # Save generators, discriminators, and optimizers
         gen_name = os.path.join(snapshot_dir, 'gen_%08d.pt' % (iterations + 1))
         dis_name = os.path.join(snapshot_dir, 'dis_%08d.pt' % (iterations + 1))
@@ -197,7 +236,8 @@ class MUNIT_Trainer(nn.Module):
         torch.save({'a': self.gen_a.state_dict(), 'b': self.gen_b.state_dict()}, gen_name)
         torch.save({'a': self.dis_a.state_dict(), 'b': self.dis_b.state_dict()}, dis_name)
         torch.save({'gen': self.gen_opt.state_dict(), 'dis': self.dis_opt.state_dict()}, opt_name)
-
+        if smart_override:
+            self.snap_clean(snapshot_dir, iterations+1)
 
 class UNIT_Trainer(nn.Module):
     def __init__(self, hyperparameters):
@@ -371,7 +411,46 @@ class UNIT_Trainer(nn.Module):
         print('Resume from iteration %d' % iterations)
         return iterations
 
-    def save(self, snapshot_dir, iterations):
+    def snap_clean(self, snap_dir, iterations):
+        # Cleaning snapshot directory from old files
+        if not os.path.exists(snap_dir):
+            return None
+        
+        gen_models = [os.path.join(snap_dir, f) for f in os.listdir(snap_dir) if "gen" in f and ".pt" in f]
+        dis_models = [os.path.join(snap_dir, f) for f in os.listdir(snap_dir) if "dis" in f and ".pt" in f]
+        
+        gen_models.sort()
+        dis_models.sort()
+        marked_clean = []
+        for i, model in enumerate(gen_models):
+            m_iter = int(model[-11:-3])
+            if i == 0:
+                m_prev = 0
+                continue
+            if m_iter > iterations - 10000:
+                break
+            if m_iter - m_prev < 10000:
+                marked_clean.append(model)
+            while m_iter - m_prev >= 10000:
+                m_prev += 10000
+        
+        for i, model in enumerate(dis_models):
+            m_iter = int(model[-11:-3])
+            if i == 0:
+                m_prev = 0
+                continue
+            if m_iter > iterations - 10000:
+                break
+            if m_iter - m_prev < 10000:
+                marked_clean.append(model)
+            while m_iter - m_prev >= 10000:
+                m_prev += 10000
+        
+        print(f'Cleaning snapshots: {marked_clean}')
+        for f in marked_clean:
+            os.remove(f)
+
+    def save(self, snapshot_dir, iterations, smart_override):
         # Save generators, discriminators, and optimizers
         gen_name = os.path.join(snapshot_dir, 'gen_%08d.pt' % (iterations + 1))
         dis_name = os.path.join(snapshot_dir, 'dis_%08d.pt' % (iterations + 1))
@@ -379,3 +458,5 @@ class UNIT_Trainer(nn.Module):
         torch.save({'a': self.gen_a.state_dict(), 'b': self.gen_b.state_dict()}, gen_name)
         torch.save({'a': self.dis_a.state_dict(), 'b': self.dis_b.state_dict()}, dis_name)
         torch.save({'gen': self.gen_opt.state_dict(), 'dis': self.dis_opt.state_dict()}, opt_name)
+        if smart_override:
+            self.snap_clean(snapshot_dir, iterations+1)

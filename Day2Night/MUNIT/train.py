@@ -2,27 +2,45 @@
 Copyright (C) 2018 NVIDIA Corporation.  All rights reserved.
 Licensed under the CC BY-NC-SA 4.0 license (https://creativecommons.org/licenses/by-nc-sa/4.0/legalcode).
 """
-from utils import get_all_data_loaders, prepare_sub_folder, write_html, write_loss, get_config, write_2images, Timer
+# System import
+import os
+import sys
 import argparse
-from torch.autograd import Variable
-from trainer import MUNIT_Trainer, UNIT_Trainer
-import torch.backends.cudnn as cudnn
+import shutil
+
+def usage():
+    parser = argparse.ArgumentParser()
+    parser.add_argument('--config', type=str, default='configs/unit_summer2winter_yosemite256_folder.yaml', help='Path to the config file.')
+    parser.add_argument('--output_path', type=str, default='.', help="outputs path")
+    parser.add_argument("--resume", action="store_true")
+    parser.add_argument('--trainer', type=str, default='MUNIT', help="MUNIT|UNIT")
+    parser.add_argument('--device', metavar='GPU', nargs='+', help='GPU List', default=["2"])
+    return parser.parse_args()
+
+opts = usage()
+
+# Choose GPU device to run
+os.environ["CUDA_DEVICE_ORDER"]="PCI_BUS_ID" 
+os.environ["CUDA_VISIBLE_DEVICES"]=",".join(str(x) for x in opts.device)
+
 import torch
+import torch.backends.cudnn as cudnn
+from torch.autograd import Variable
+from utils import get_all_data_loaders, prepare_sub_folder, write_html, write_loss, get_config, write_2images, Timer
+from trainer import MUNIT_Trainer, UNIT_Trainer
 try:
     from itertools import izip as zip
 except ImportError: # will be 3.x series
     pass
-import os
-import sys
 import tensorboardX
+from subprocess import call
 import shutil
 
-parser = argparse.ArgumentParser()
-parser.add_argument('--config', type=str, default='configs/edges2handbags_folder.yaml', help='Path to the config file.')
-parser.add_argument('--output_path', type=str, default='.', help="outputs path")
-parser.add_argument("--resume", action="store_true")
-parser.add_argument('--trainer', type=str, default='MUNIT', help="MUNIT|UNIT")
-opts = parser.parse_args()
+# Print System Info 
+print('CUDA Devices')
+call(["nvidia-smi", "--format=csv", "--query-gpu=index,name,driver_version,memory.total,memory.used,memory.free"])
+print(f'Available devices {torch.cuda.device_count()}: {", ".join(str(x) for x in opts.device)}')
+print('Active CUDA Device: GPU', torch.cuda.current_device())
 
 cudnn.benchmark = True
 
@@ -73,6 +91,7 @@ while True:
 
         # Write images
         if (iterations + 1) % config['image_save_iter'] == 0:
+            print(f'Saving images to {image_directory}')
             with torch.no_grad():
                 test_image_outputs = trainer.sample(test_display_images_a, test_display_images_b)
                 train_image_outputs = trainer.sample(train_display_images_a, train_display_images_b)
@@ -88,9 +107,9 @@ while True:
 
         # Save network weights
         if (iterations + 1) % config['snapshot_save_iter'] == 0:
-            trainer.save(checkpoint_directory, iterations)
+            print(f'Saving pre-trained checkpoint to {checkpoint_directory}')
+            trainer.save(checkpoint_directory, iterations, config['snapshot_smart_override'])
 
         iterations += 1
         if iterations >= max_iter:
             sys.exit('Finish training')
-
