@@ -22,11 +22,9 @@ RUN apt-get update && apt-get install -y --no-install-recommends \
          zip \
          unzip \
          vim
-RUN echo "alias jup=\"bash /mnt/w/prj/jup\"" >> ~/.bashrc
 RUN wget https://repo.anaconda.com/archive/${ANACONDA_VER} -P /tmp
 RUN bash /tmp/${ANACONDA_VER} -b -p $ANACONDA
 RUN rm /tmp/${ANACONDA_VER} -rf
 RUN conda install -y pytorch torchvision cudatoolkit=10.0 -c pytorch
 RUN conda install -y pip yaml -c anaconda
-RUN pip install torchfile
 RUN pip install tensorboard tensorboardX tensorflow;

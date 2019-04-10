@@ -22,7 +22,6 @@ RUN apt-get update && apt-get install -y --no-install-recommends \
          zip \
          unzip \
          vim
-RUN echo "alias jup=\"bash /mnt/w/prj/jup\"" >> ~/.bashrc
 RUN wget https://repo.anaconda.com/archive/${ANACONDA_VER} -P /tmp
 RUN bash /tmp/${ANACONDA_VER} -b -p $ANACONDA
 RUN rm /tmp/${ANACONDA_VER} -rf
