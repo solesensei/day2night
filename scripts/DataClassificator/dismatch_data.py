@@ -3,7 +3,7 @@ from shutil import copy, move
 import pandas as pd
 
 csv = './nexet_diffs.csv'
-datadir = '/mnt/w/prj/data/nexet/nexet_2017_1/trainA'
+datadir = '/mnt/w/prj/data/nexet/nexet_2017_1/trainB'
 
 df = pd.read_csv(csv, sep=',', encoding='utf8', skipinitialspace=True)
 

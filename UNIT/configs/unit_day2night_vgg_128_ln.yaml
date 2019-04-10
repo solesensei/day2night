@@ -36,7 +36,7 @@ gen:
   pad_type: reflect           # padding type [zero/reflect]
 dis: 
   dim: 64                     # number of filters in the bottommost layer
-  norm: none                  # normalization layer [none/bn/in/ln]
+  norm: ln                  # normalization layer [none/bn/in/ln]
   activ: lrelu                # activation function [relu/lrelu/prelu/selu/tanh]
   n_layer: 4                  # number of layers in D
   gan_type: lsgan             # GAN loss [lsgan/nsgan]
@@ -47,7 +47,7 @@ dis:
 input_dim_a: 3                              # number of image channels [1/3]
 input_dim_b: 3                              # number of image channels [1/3]
 num_workers: 8                              # number of data loading threads
-new_size: 256                               # first resize the shortest image side to this size
-crop_image_height: 256                      # random crop image of this height
-crop_image_width: 256                       # random crop image of this width
+new_size: 180                               # first resize the shortest image side to this size
+crop_image_height: 128                      # random crop image of this height
+crop_image_width: 128                       # random crop image of this width
 data_root: /mnt/w/prj/data/nexet/nexet_2017_1   # dataset folder location
