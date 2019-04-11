@@ -14,7 +14,7 @@ def usage():
     parser.add_argument('--output_path', type=str, default='.', help="outputs path")
     parser.add_argument("--resume", action="store_true")
     parser.add_argument('--trainer', type=str, default='MUNIT', help="MUNIT|UNIT")
-    parser.add_argument('--device', metavar='GPU', nargs='+', help='GPU List', default=["2"])
+    parser.add_argument('--device', metavar='GPU', nargs='+', help='GPU List', default=["0"])
     return parser.parse_args()
 
 opts = usage()
