@@ -4,7 +4,7 @@ Licensed under the CC BY-NC-SA 4.0 license (https://creativecommons.org/licenses
 """
 from torch.utils.serialization import load_lua
 from torch.utils.data import DataLoader
-from networks import Vgg16
+from networks import Vgg16, ResNet
 from torch.autograd import Variable
 from torch.optim import lr_scheduler
 from torchvision import transforms
@@ -13,6 +13,7 @@ import torch
 import os
 import math
 import torchvision.utils as vutils
+import torch.utils.model_zoo as model_zoo
 import yaml
 import numpy as np
 import torch.nn.init as init
@@ -217,7 +218,25 @@ def get_model_list(dirname, key):
     return last_model_name
 
 def load_resnet18(model_dir):
-    pass
+    if not os.path.exists(model_dir):
+        os.mkdir(model_dir)
+    if not os.path.exists(os.path.join(model_dir, 'resnet18-5c106cde.pth')):
+        resnet = ResNet()
+        model = model_zoo.load_url('https://download.pytorch.org/models/resnet18-5c106cde.pth', model_dir)
+        resnet.load_state_dict(model)
+    return resnet
+
+def resnet_preprocess(batch):
+    tensortype = type(batch.data)
+    (r, g, b) = torch.chunk(batch, 3, dim = 1)
+    batch = torch.cat((b, g, r), dim = 1) # convert RGB to BGR
+    batch = (batch + 1) * 255 * 0.5 # [-1, 1] -> [0, 255]
+    mean = tensortype(batch.data.size()).cuda()
+    mean[:, 0, :, :] = 103.939
+    mean[:, 1, :, :] = 116.779
+    mean[:, 2, :, :] = 123.680
+    batch = batch.sub(Variable(mean)) # subtract mean
+    return batch
 
 def load_vgg16(model_dir):
     """ Use the model from https://github.com/abhiskk/fast-neural-style/blob/master/neural_style/utils.py """
@@ -297,7 +316,7 @@ class Timer:
 def pytorch03_to_pytorch04(state_dict_base):
     def __conversion_core(state_dict_base):
         state_dict = state_dict_base.copy()
-        for key, value in state_dict_base.items():
+        for key, _ in state_dict_base.items():
             if key.endswith(('enc.model.0.norm.running_mean',
                              'enc.model.0.norm.running_var',
                              'enc.model.1.norm.running_mean',
