@@ -1,5 +1,5 @@
 # logger options
-image_save_iter: 1000        # How often do you want to save output images during training
+image_save_iter: 50        # How often do you want to save output images during training
 image_display_iter: 50000       # How often do you want to display output images during training
 display_size: 8              # How many images do you want to display each time
 snapshot_save_iter: 1000     # How often do you want to save trained models
