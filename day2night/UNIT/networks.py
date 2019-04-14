@@ -37,7 +37,7 @@ class MsImageDis(nn.Module):
         dim = self.dim
         cnn_x = []
         cnn_x += [Conv2dBlock(self.input_dim, dim, 4, 2, 1, norm='none', activation=self.activ, pad_type=self.pad_type)]
-        for i in range(self.n_layer - 1):
+        for _ in range(self.n_layer - 1):
             cnn_x += [Conv2dBlock(dim, dim * 2, 4, 2, 1, norm=self.norm, activation=self.activ, pad_type=self.pad_type)]
             dim *= 2
         cnn_x += [nn.Conv2d(dim, 1, 1, 1, 0)]
@@ -57,7 +57,7 @@ class MsImageDis(nn.Module):
         outs1 = self.forward(input_real)
         loss = 0
 
-        for it, (out0, out1) in enumerate(zip(outs0, outs1)):
+        for _, (out0, out1) in enumerate(zip(outs0, outs1)):
             if self.gan_type == 'lsgan':
                 loss += torch.mean((out0 - 0)**2) + torch.mean((out1 - 1)**2)
             elif self.gan_type == 'nsgan':
@@ -73,7 +73,7 @@ class MsImageDis(nn.Module):
         # calculate the loss to train G
         outs0 = self.forward(input_fake)
         loss = 0
-        for it, (out0) in enumerate(outs0):
+        for _, (out0) in enumerate(outs0):
             if self.gan_type == 'lsgan':
                 loss += torch.mean((out0 - 1)**2) # LSGAN
             elif self.gan_type == 'nsgan':
@@ -191,10 +191,10 @@ class StyleEncoder(nn.Module):
         super(StyleEncoder, self).__init__()
         self.model = []
         self.model += [Conv2dBlock(input_dim, dim, 7, 1, 3, norm=norm, activation=activ, pad_type=pad_type)]
-        for i in range(2):
+        for _ in range(2):
             self.model += [Conv2dBlock(dim, 2 * dim, 4, 2, 1, norm=norm, activation=activ, pad_type=pad_type)]
             dim *= 2
-        for i in range(n_downsample - 2):
+        for _ in range(n_downsample - 2):
             self.model += [Conv2dBlock(dim, dim, 4, 2, 1, norm=norm, activation=activ, pad_type=pad_type)]
         self.model += [nn.AdaptiveAvgPool2d(1)] # global average pooling
         self.model += [nn.Conv2d(dim, style_dim, 1, 1, 0)]
@@ -210,7 +210,7 @@ class ContentEncoder(nn.Module):
         self.model = []
         self.model += [Conv2dBlock(input_dim, dim, 7, 1, 3, norm=norm, activation=activ, pad_type=pad_type)]
         # downsampling blocks
-        for i in range(n_downsample):
+        for _ in range(n_downsample):
             self.model += [Conv2dBlock(dim, 2 * dim, 4, 2, 1, norm=norm, activation=activ, pad_type=pad_type)]
             dim *= 2
         # residual blocks
@@ -229,7 +229,7 @@ class Decoder(nn.Module):
         # AdaIN residual blocks
         self.model += [ResBlocks(n_res, dim, res_norm, activ, pad_type=pad_type)]
         # upsampling blocks
-        for i in range(n_upsample):
+        for _ in range(n_upsample):
             self.model += [nn.Upsample(scale_factor=2),
                            Conv2dBlock(dim, dim // 2, 5, 1, 2, norm='ln', activation=activ, pad_type=pad_type)]
             dim //= 2
@@ -247,7 +247,7 @@ class ResBlocks(nn.Module):
     def __init__(self, num_blocks, dim, norm='in', activation='relu', pad_type='zero'):
         super(ResBlocks, self).__init__()
         self.model = []
-        for i in range(num_blocks):
+        for _ in range(num_blocks):
             self.model += [ResBlock(dim, norm=norm, activation=activation, pad_type=pad_type)]
         self.model = nn.Sequential(*self.model)
 
@@ -260,7 +260,7 @@ class MLP(nn.Module):
         super(MLP, self).__init__()
         self.model = []
         self.model += [LinearBlock(input_dim, dim, norm=norm, activation=activ)]
-        for i in range(n_blk - 2):
+        for _ in range(n_blk - 2):
             self.model += [LinearBlock(dim, dim, norm=norm, activation=activ)]
         self.model += [LinearBlock(dim, output_dim, norm='none', activation='none')] # no output activations
         self.model = nn.Sequential(*self.model)
@@ -518,7 +518,7 @@ class ResNet(nn.Module):
         layers = []
         layers.append(block(self.inplanes, planes, stride, downsample))
         self.inplanes = planes * block.expansion
-        for i in range(1, blocks):
+        for _ in range(1, blocks):
             layers.append(block(self.inplanes, planes))
 
         return nn.Sequential(*layers)

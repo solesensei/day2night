@@ -14,7 +14,7 @@ def usage():
     parser.add_argument('--output_path', type=str, default='.', help="outputs path")
     parser.add_argument("--resume", action="store_true")
     parser.add_argument('--trainer', type=str, default='MUNIT', help="MUNIT|UNIT")
-    parser.add_argument('--device', metavar='GPU', nargs='+', help='GPU List', default=["2"])
+    parser.add_argument('--device', metavar='GPU', nargs='+', help='GPU List', default=["0"])
     return parser.parse_args()
 
 opts = usage()
@@ -86,7 +86,8 @@ while True:
 
         # Dump training stats in log file
         if (iterations + 1) % config['log_iter'] == 0:
-            print("Iteration: %08d/%08d" % (iterations + 1, max_iter))
+            print("Iteration: %08d/%08d" % (iterations + 1, max_iter), end=' ')
+            print("Learning rate:", trainer.dis_scheduler.get_lr()[0])
             write_loss(iterations, trainer, train_writer)
 
         # Write images

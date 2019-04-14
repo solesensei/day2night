@@ -3,7 +3,7 @@ Copyright (C) 2017 NVIDIA Corporation.  All rights reserved.
 Licensed under the CC BY-NC-SA 4.0 license (https://creativecommons.org/licenses/by-nc-sa/4.0/legalcode).
 """
 from networks import AdaINGen, MsImageDis, VAEGen
-from utils import weights_init, get_model_list, vgg_preprocess, load_vgg16, get_scheduler
+from utils import weights_init, get_model_list, vgg_preprocess, resnet_preprocess, load_vgg16, load_resnet18, get_scheduler
 from torch.autograd import Variable
 import torch
 import torch.nn as nn
@@ -49,6 +49,12 @@ class MUNIT_Trainer(nn.Module):
             self.vgg.eval()
             for param in self.vgg.parameters():
                 param.requires_grad = False
+        # Load ResNet model if needed        
+        if 'resnet_w' in hyperparameters.keys() and hyperparameters['resnet_w'] > 0:
+            self.resnet = load_resnet18(hyperparameters['resnet_model_path'] + '/models')
+            self.resnet.eval()
+            for param in self.resnet.parameters():
+                param.requires_grad = False
 
     def recon_criterion(self, input, target):
         return torch.mean(torch.abs(input - target))
@@ -57,8 +63,8 @@ class MUNIT_Trainer(nn.Module):
         self.eval()
         s_a = Variable(self.s_a)
         s_b = Variable(self.s_b)
-        c_a, s_a_fake = self.gen_a.encode(x_a)
-        c_b, s_b_fake = self.gen_b.encode(x_b)
+        c_a, _ = self.gen_a.encode(x_a)
+        c_b, _ = self.gen_b.encode(x_b)
         x_ba = self.gen_a.decode(c_b, s_a)
         x_ab = self.gen_b.decode(c_a, s_b)
         self.train()
@@ -99,6 +105,8 @@ class MUNIT_Trainer(nn.Module):
         # domain-invariant perceptual loss
         self.loss_gen_vgg_a = self.compute_vgg_loss(self.vgg, x_ba, x_b) if hyperparameters['vgg_w'] > 0 else 0
         self.loss_gen_vgg_b = self.compute_vgg_loss(self.vgg, x_ab, x_a) if hyperparameters['vgg_w'] > 0 else 0
+        self.loss_gen_resnet_a = self.compute_resnet_loss(self.resnet, x_ba, x_b) if hyperparameters['resnet_w'] > 0 else 0
+        self.loss_gen_resnet_b = self.compute_resnet_loss(self.resnet, x_ab, x_a) if hyperparameters['resnet_w'] > 0 else 0
         # total loss
         self.loss_gen_total = hyperparameters['gan_w'] * self.loss_gen_adv_a + \
                               hyperparameters['gan_w'] * self.loss_gen_adv_b + \
@@ -111,7 +119,9 @@ class MUNIT_Trainer(nn.Module):
                               hyperparameters['recon_x_cyc_w'] * self.loss_gen_cycrecon_x_a + \
                               hyperparameters['recon_x_cyc_w'] * self.loss_gen_cycrecon_x_b + \
                               hyperparameters['vgg_w'] * self.loss_gen_vgg_a + \
-                              hyperparameters['vgg_w'] * self.loss_gen_vgg_b
+                              hyperparameters['vgg_w'] * self.loss_gen_vgg_b + \
+                              hyperparameters['resnet_w'] * self.loss_gen_resnet_a + \
+                              hyperparameters['resnet_w'] * self.loss_gen_resnet_b
         self.loss_gen_total.backward()
         self.gen_opt.step()
 
@@ -120,6 +130,13 @@ class MUNIT_Trainer(nn.Module):
         target_vgg = vgg_preprocess(target)
         img_fea = vgg(img_vgg)
         target_fea = vgg(target_vgg)
+        return torch.mean((self.instancenorm(img_fea) - self.instancenorm(target_fea)) ** 2)
+
+    def compute_resnet_loss(self, resnet, img, target):
+        img_resnet = resnet_preprocess(img)
+        target_resnet = resnet_preprocess(target)
+        img_fea = resnet(img_resnet)
+        target_fea = resnet(target_resnet)
         return torch.mean((self.instancenorm(img_fea) - self.instancenorm(target_fea)) ** 2)
 
     def sample(self, x_a, x_b):
@@ -273,6 +290,12 @@ class UNIT_Trainer(nn.Module):
             self.vgg.eval()
             for param in self.vgg.parameters():
                 param.requires_grad = False
+        # Load ResNet model if needed        
+        if 'resnet_w' in hyperparameters.keys() and hyperparameters['resnet_w'] > 0:
+            self.resnet = load_resnet18(hyperparameters['resnet_model_path'] + '/models')
+            self.resnet.eval()
+            for param in self.resnet.parameters():
+                param.requires_grad = False
 
     def recon_criterion(self, input, target):
         return torch.mean(torch.abs(input - target))
@@ -329,6 +352,8 @@ class UNIT_Trainer(nn.Module):
         # domain-invariant perceptual loss
         self.loss_gen_vgg_a = self.compute_vgg_loss(self.vgg, x_ba, x_b) if hyperparameters['vgg_w'] > 0 else 0
         self.loss_gen_vgg_b = self.compute_vgg_loss(self.vgg, x_ab, x_a) if hyperparameters['vgg_w'] > 0 else 0
+        self.loss_gen_resnet_a = self.compute_resnet_loss(self.resnet, x_ba, x_b) if hyperparameters['resnet_w'] > 0 else 0
+        self.loss_gen_resnet_b = self.compute_resnet_loss(self.resnet, x_ab, x_a) if hyperparameters['resnet_w'] > 0 else 0
         # total loss
         self.loss_gen_total = hyperparameters['gan_w'] * self.loss_gen_adv_a + \
                               hyperparameters['gan_w'] * self.loss_gen_adv_b + \
@@ -341,7 +366,9 @@ class UNIT_Trainer(nn.Module):
                               hyperparameters['recon_x_cyc_w'] * self.loss_gen_cyc_x_b + \
                               hyperparameters['recon_kl_cyc_w'] * self.loss_gen_recon_kl_cyc_bab + \
                               hyperparameters['vgg_w'] * self.loss_gen_vgg_a + \
-                              hyperparameters['vgg_w'] * self.loss_gen_vgg_b
+                              hyperparameters['vgg_w'] * self.loss_gen_vgg_b + \
+                              hyperparameters['resnet_w'] * self.loss_gen_resnet_a + \
+                              hyperparameters['resnet_w'] * self.loss_gen_resnet_b
         self.loss_gen_total.backward()
         self.gen_opt.step()
 
@@ -350,6 +377,13 @@ class UNIT_Trainer(nn.Module):
         target_vgg = vgg_preprocess(target)
         img_fea = vgg(img_vgg)
         target_fea = vgg(target_vgg)
+        return torch.mean((self.instancenorm(img_fea) - self.instancenorm(target_fea)) ** 2)
+
+    def compute_resnet_loss(self, resnet, img, target):
+        img_resnet = resnet_preprocess(img)
+        target_resnet = resnet_preprocess(target)
+        img_fea = resnet(img_resnet)
+        target_fea = resnet(target_resnet)
         return torch.mean((self.instancenorm(img_fea) - self.instancenorm(target_fea)) ** 2)
 
     def sample(self, x_a, x_b):
