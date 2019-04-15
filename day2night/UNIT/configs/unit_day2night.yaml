@@ -24,6 +24,7 @@ recon_kl_w: 0.01              # weight of KL loss for reconstruction
 recon_x_cyc_w: 10             # weight of cycle consistency loss
 recon_kl_cyc_w: 0.01          # weight of KL loss for cycle consistency
 vgg_w: 0                      # weight of domain-invariant perceptual loss
+resnet_w: 0                   # use resnet_w as a pt model
 
 # model options
 gen:
