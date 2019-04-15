@@ -10,7 +10,7 @@ import shutil
 
 def usage():
     parser = argparse.ArgumentParser()
-    parser.add_argument('--config', type=str, default='configs/unit_summer2winter_yosemite256_folder.yaml', help='Path to the config file.')
+    parser.add_argument('--config', type=str, default='configs/unit_day2night.yaml', help='Path to the config file.')
     parser.add_argument('--output_path', type=str, default='.', help="outputs path")
     parser.add_argument("--resume", action="store_true")
     parser.add_argument('--trainer', type=str, default='UNIT', help="MUNIT|UNIT")
