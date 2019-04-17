@@ -115,12 +115,14 @@
 	Данная область направленна на получение информации об объекте, сохранение и последующее применение этих знаний к другому объекту, связанному с первым.   
 	\textit{Перенос изображений} в свою очередь является подклассом переноса обучения применямым на изображениях. 
 	Перенос изображений используется самыми разнообразными способами.
-	С помощью него можно добиться объединения стилей двух изображений\ref{b_style_transfer},
+	С помощью него можно добиться объединения стилей двух изображений \cite{style_transfer},
 	\textit{колоризации}\footnote{
 		\textbf{Колоризация} (англ. \textit{colorization}) -- преобразование монохромных изображений в цветные.
-		} черно-белых фотографий\ref{b_color_transfer}, объединение локальных признаков объектов и животных\ref{b_feature_transfer}.
+		} черно-белых фотографий \cite{color_transfer}, объединение локальных признаков объектов и животных \cite{CycleGAN}.
 
 	В данной работе я рассматриваю основные алгоритмы  
+
+
 % \section{Постановка задачи}
 % 	\subsection{Цель работы}
 % 	\subsection{Постановка задачи}
@@ -137,23 +139,34 @@
 
 \begin{thebibliography}{00}
 
-	\bibitem{UNIT}
-	\textbf{M.-Y.Liu, T.Breuel, J.Kautz}.
-	\emph{Unsupervised Image-to-Image Translation Networks}.
-	NVIDIA Corporation,
-	Jule 2018.
+	\bibitem{style_transfer}
+	\textbf{J.Johnson, A.Alahi, L.Fei-Fei}.
+	\emph{Perceptual Losses for Real-Time Style Transfer and Super-Resolution}.
+	Department of Computer Science, Stanford University,
+	March 2016.
 
-	\bibitem{MUNIT}
-	\textbf{X.Huang, M.-Y.Liu, S.Belongie, J.Kautz}.
-	\emph{Multimodal Unsupervised Image-to-Image Translation}.
-	Cornell University, NVIDIA Corporation,
-	August 2018.
+	\bibitem{color_transfer}
+	\textbf{R.Zhang, J.-Y.Zhu, P.Isola, X.Geng, A.S.Lin, T.Yu, A.A.Efros}.
+	\emph{Real-Time User-Guided Image Colorization with Learned Deep Priors}.
+	University of California, Berkeley,
+	May 2017.
 
 	\bibitem{CycleGAN}
 	\textbf{J.-Y.Zhu, T.Park, P.Isola, A.A.Efros}.
 	\emph{Unpaired Image-to-Image Translation using Cycle-Consistent Adversarial Networks}.
 	Berkeley AI Research (BAIR) laboratory, UC Berkeley,
 	November 2018.
+
+	\bibitem{UNIT}
+	\textbf{M.-Y.Liu, T.Breuel, J.Kautz}.
+	\emph{Unsupervised Image-to-Image Translation Networks}.
+	NVIDIA Corporation,
+	Jule 2018.
+	\bibitem{MUNIT}
+	\textbf{X.Huang, M.-Y.Liu, S.Belongie, J.Kautz}.
+	\emph{Multimodal Unsupervised Image-to-Image Translation}.
+	Cornell University, NVIDIA Corporation,
+	August 2018.
 
 	\bibitem{BicycleGAN}
 	\textbf{J.-Y.Zhu, R.Zhang, D.Pathak, A.A.Efros}.
@@ -162,11 +175,16 @@
 	October 2018.
 
 	\bibitem{EG-UNIT}
-	\textbf{Liqian Ma, Xu Jia, S.Georgoulis, T.Tuytelaars, Luc Van Gool}.
+	\textbf{L.Ma, X.Jia, S.Georgoulis, T.Tuytelaars, L.V.Gool}.
 	\emph{Exemplar Guided Unsupervised Image-to-Image Translation}.
 	Berkeley AI Research, UC Berkeley, Adobe Research,
 	March 2019.
-
+	
+	\bibitem{Deep_Learning}
+	\textbf{С.Николенко, А.Кадурин, Е.Архангельская}.
+	\emph{Глубокое обучение}.
+	СПб.: Питер, 
+	2018.
 	
 \end{thebibliography}
 
