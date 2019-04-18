@@ -2,6 +2,7 @@ outputs/
 datasets/
 models/
 data/
+logs/
 .idea/
 dgx/scripts/
 .ipynb_checkpoints/

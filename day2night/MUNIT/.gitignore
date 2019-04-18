@@ -3,6 +3,7 @@ models/
 src/models/
 data/
 .idea/
+logs/
 dgx/scripts/
 .ipynb_checkpoints/
 src/*jpg
