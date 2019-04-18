@@ -1,4 +1,4 @@
-FROM nvidia/cuda:9.0-base
+FROM nvidia/cuda:10.1-cudnn7-runtime-ubuntu18.04
 
 RUN apt update && apt install -y wget unzip curl bzip2 git
 RUN curl -LO http://repo.continuum.io/miniconda/Miniconda-latest-Linux-x86_64.sh
