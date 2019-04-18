@@ -1,8 +1,8 @@
 # logger options
-image_save_iter: 50        # How often do you want to save output images during training
+image_save_iter: 1000        # How often do you want to save output images during training
 image_display_iter: 50000       # How often do you want to display output images during training
 display_size: 8              # How many images do you want to display each time
-snapshot_save_iter: 450     # How often do you want to save trained models
+snapshot_save_iter: 1000     # How often do you want to save trained models
 snapshot_smart_override: True # Use to smart cleaning old snapshots while clearing  
 log_iter: 10                  # How often do you want to log the training stats
 
@@ -15,7 +15,7 @@ beta2: 0.999                  # Adam parameter
 init: kaiming                 # initialization [gaussian/kaiming/xavier/orthogonal]
 lr: 0.0004                    # initial learning rate
 lr_policy: step               # learning rate scheduler
-step_size: 400             # how often to decay learning rate
+step_size: 100000             # how often to decay learning rate
 gamma: 0.5                    # how much to decay learning rate
 gan_w: 1                      # weight of adversarial loss
 recon_x_w: 10                 # weight of image reconstruction loss
