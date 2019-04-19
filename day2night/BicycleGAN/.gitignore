@@ -3,13 +3,12 @@
 *.pth
 *.pyc
 debug*
-datasets/
 videos/
 checkpoints/
 pretrained_models/
-results/
 build/
 dist/
+*.tex
 *.png
 torch.egg-info/
 */**/__pycache__
