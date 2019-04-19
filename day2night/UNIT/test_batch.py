@@ -46,6 +46,7 @@ image_names = ImageFolder(opts.input_folder, transform=None, return_paths=True)
 data_loader = get_data_loader_folder(opts.input_folder, 1, False, new_size=config['new_size_a'], crop=False)
 
 config['vgg_model_path'] = opts.output_path
+config['resnet_model_path'] = opts.output_path
 if opts.trainer == 'MUNIT':
     style_dim = config['gen']['style_dim']
     trainer = MUNIT_Trainer(config)
