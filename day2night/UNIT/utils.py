@@ -220,10 +220,9 @@ def get_model_list(dirname, key):
 def load_resnet18(model_dir):
     if not os.path.exists(model_dir):
         os.mkdir(model_dir)
-    if not os.path.exists(os.path.join(model_dir, 'resnet18-5c106cde.pth')):
-        resnet = ResNet()
-        model = model_zoo.load_url('https://download.pytorch.org/models/resnet18-5c106cde.pth', model_dir)
-        resnet.load_state_dict(model)
+    resnet = ResNet()
+    model = model_zoo.load_url('https://download.pytorch.org/models/resnet18-5c106cde.pth', model_dir)
+    resnet.load_state_dict(model)
     return resnet
 
 def resnet_preprocess(batch):
