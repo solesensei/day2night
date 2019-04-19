@@ -189,7 +189,7 @@ class MUNIT_Trainer(nn.Module):
         print('Resume from iteration %d' % iterations)
         return iterations
 
-    def snap_clean(self, snap_dir, iterations):
+    def snap_clean(self, snap_dir, iterations, save_last=10000, period=20000):
         # Cleaning snapshot directory from old files
         if not os.path.exists(snap_dir):
             return None
@@ -205,24 +205,24 @@ class MUNIT_Trainer(nn.Module):
             if i == 0:
                 m_prev = 0
                 continue
-            if m_iter > iterations - 10000:
+            if m_iter > iterations - save_last:
                 break
-            if m_iter - m_prev < 10000:
+            if m_iter - m_prev < period:
                 marked_clean.append(model)
-            while m_iter - m_prev >= 10000:
-                m_prev += 10000
+            while m_iter - m_prev >= period:
+                m_prev += period
         
         for i, model in enumerate(dis_models):
             m_iter = int(model[-11:-3])
             if i == 0:
                 m_prev = 0
                 continue
-            if m_iter > iterations - 10000:
+            if m_iter > iterations - save_last:
                 break
-            if m_iter - m_prev < 10000:
+            if m_iter - m_prev < period:
                 marked_clean.append(model)
-            while m_iter - m_prev >= 10000:
-                m_prev += 10000
+            while m_iter - m_prev >= period:
+                m_prev += period
         
         print(f'Cleaning snapshots: {marked_clean}')
         for f in marked_clean:
@@ -411,7 +411,7 @@ class UNIT_Trainer(nn.Module):
         print('Resume from iteration %d' % iterations)
         return iterations
 
-    def snap_clean(self, snap_dir, iterations):
+    def snap_clean(self, snap_dir, iterations, save_last=10000, period=20000):
         # Cleaning snapshot directory from old files
         if not os.path.exists(snap_dir):
             return None
@@ -427,24 +427,24 @@ class UNIT_Trainer(nn.Module):
             if i == 0:
                 m_prev = 0
                 continue
-            if m_iter > iterations - 10000:
+            if m_iter > iterations - save_last:
                 break
-            if m_iter - m_prev < 10000:
+            if m_iter - m_prev < period:
                 marked_clean.append(model)
-            while m_iter - m_prev >= 10000:
-                m_prev += 10000
+            while m_iter - m_prev >= period:
+                m_prev += period
         
         for i, model in enumerate(dis_models):
             m_iter = int(model[-11:-3])
             if i == 0:
                 m_prev = 0
                 continue
-            if m_iter > iterations - 10000:
+            if m_iter > iterations - save_last:
                 break
-            if m_iter - m_prev < 10000:
+            if m_iter - m_prev < period:
                 marked_clean.append(model)
-            while m_iter - m_prev >= 10000:
-                m_prev += 10000
+            while m_iter - m_prev >= period:
+                m_prev += period
         
         print(f'Cleaning snapshots: {marked_clean}')
         for f in marked_clean:
