@@ -14,8 +14,8 @@ ASPECT_RATIO=1.4
  # change aspect ratio for the test images
 
 # misc
-GPU_ID=0   # gpu id
-NUM_TEST=10 # number of input images duirng test
+GPU_ID=2  # gpu id
+NUM_TEST=20 # number of input images duirng test
 NUM_SAMPLES=10 # number of samples per input images
 
 
