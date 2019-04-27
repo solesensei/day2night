@@ -139,29 +139,29 @@ class DomainShifter(object):
             for i, row in self.csv.iterrows():
                 if i % 1000 == 0:
                     print(i, 'files processed', end='\r')
-                name = str(row[col_name])
-                state = str(row[col_state])
-                src = os.path.join(base, name)
                 is_shifted = False
+                src = os.path.join(base, name)
+                if os.path.exists(src):
+                    name = str(row[col_name])
+                    state = str(row[col_state])
 
-                if state == 'Twilight':
-                    continue
+                    if state == 'Twilight':
+                        continue
 
-                domain_type = np.random.choice(['train', 'test'], p=[train_probability, test_probability])
+                    domain_type = np.random.choice(['train', 'test'], p=[train_probability, test_probability])
 
-                for item in self.domains.items():
-                    if state in item[1] and item[0][:-1] == domain_type:
-                        dst = os.path.join(base, item[0])
-                        dstname = os.path.join(dst, name)
-                        if os.path.exists(src) and (mode == 'move' or not os.path.exists(dstname)):
-                            shift(src, dst)
-                            print(f'{shift.__name__}: {src} → {dst}', file=log)
+                    for item in self.domains.items():
+                        if state in item[1] and item[0][:-1] == domain_type:
+                            dst = os.path.join(base, item[0])
+                            dstname = os.path.join(dst, name)
+                            if mode == 'move' or not os.path.exists(dstname):
+                                shift(src, dst)
+                                print(f'{shift.__name__}: {src} → {dst}', file=log)
                             is_shifted = True
-                        elif os.path.exists(dstname):
-                            is_shifted = True
-                        break
+                            break
                 if not is_shifted:
-                    print(f'{row[col_name]} file not shifted', file=err)
+                    print(f'{name} file not shifted', file=err)
+
             for root, sdir, _ in os.walk(self.dataset):
                 for folder in sdir:
                     if folder in self.domains.keys():
@@ -169,7 +169,7 @@ class DomainShifter(object):
                             nfile = len(files)
                             print(f'Files in domain {folder}: {nfile}')
                             print(f'Files in domain {folder}: {nfile}', file=log)
-        print('Shifiting completed!')
+        print('Shifting completed!')
 
 
 # Main
