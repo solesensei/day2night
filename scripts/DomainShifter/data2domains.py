@@ -25,7 +25,7 @@ mode = "move"  #@param ["move", "copy", "none"]
 domains2data = False  #@param {type:"boolean"}
 show_errors = 5  #@param {type:"slider", min:0, max:100, step:1}
 show_log = 10  #@param {type:"slider", min:0, max:100, step:1}
-train_test_ratio = 90  #@param {type:"slider", min:5, max:95, step:5}
+train_test_ratio = 100  #@param {type:"slider", min:5, max:95, step:5}
 
 # -----------------------------------------------------------
 
