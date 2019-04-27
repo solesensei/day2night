@@ -206,7 +206,7 @@ class MUNIT_Trainer(nn.Module):
         print('Resume from iteration %d' % iterations)
         return iterations
 
-    def snap_clean(self, snap_dir, iterations, save_last=10000, period=20000):
+    def snap_clean(self, snap_dir, iterations, save_last=10000, period=50000):
         # Cleaning snapshot directory from old files
         if not os.path.exists(snap_dir):
             return None
@@ -445,7 +445,7 @@ class UNIT_Trainer(nn.Module):
         print('Resume from iteration %d' % iterations)
         return iterations
 
-    def snap_clean(self, snap_dir, iterations, save_last=10000, period=20000):
+    def snap_clean(self, snap_dir, iterations, save_last=10000, period=50000):
         # Cleaning snapshot directory from old files
         if not os.path.exists(snap_dir):
             return None
