@@ -1,6 +1,4 @@
 import os
-import pandas as pd 
-import numpy as np
 
 datapath = '/home/sole/gml/nexet/'
 # -----------------------------
@@ -8,25 +6,41 @@ datapath = '/home/sole/gml/nexet/'
 if not os.path.exists(datapath):
     raise FileExistsError(f'{datapath} not found')
 
-dfs = []
+stack = []
 for root,dirs,files in os.walk(datapath):
     print(root)
+    if len(files) == 0:
+        continue
+    dfs = set()
     for f in files:
         path = os.path.join(root, f)
         name = os.path.splitext(os.path.basename(f))[0]
         print('name:', name)
-        df = pd.read_csv(path, sep=" ")
-        df.columns = [name]
-        dfs.append(df)
+        with open(path, 'r') as txt:
+            for line in txt:
+                dfs.add(line.strip())
+    stack.append(dfs)
 
-dfs = pd.concat(dfs, axis=1)
-print(dfs.head())
-print(dfs.columns)
-# for k,v in dfs.items():
-#     if len(v) != 2:
-#         print(f'{k} has {len(v)} files, can\'t compare')
-#         continue
-#     df1 = v[0]#.reset_index(drop=True)
+for s in stack:
+    print(s.head())
+    print(s.columns)
+
+
+df1 = stack[0]
+df2 = stack[1]
+
+
+if (df1.columns != df2.columns).any():
+    raise ValueError("Two dataframe columns must match")
+
+if df1.equals(df2):
+    df = None
+else:
+    df = pd.concat([df2, df1, df1]).drop_duplicates(keep=False)
+    # df = pd.concat([df1, df2, df2]).drop_duplicates(keep=False)
+
+print(df.head())
+    # df1 = v[0]#.reset_index(drop=True)
 #     df2 = v[1]#.reset_index(drop=True)
 #     # print(df1.head)
 #     # print(df1.columns)
