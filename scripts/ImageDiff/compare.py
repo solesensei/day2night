@@ -52,7 +52,9 @@ class ImageDiff:
     def compare_images(self, imageA, imageB, interactive=False, title='Compare'):
         m = self.mse(imageA, imageB)
         s, d = self.ssim(imageA, imageB)
-
+        d = (d * 255).astype("uint8")
+        thresh = cv2.threshold(d, 0, 255,
+        cv2.THRESH_BINARY_INV | cv2.THRESH_OTSU)[1]
         is_equal = self.is_equal(imageA, imageB)
         if is_equal:
             msg = "The images are the same"
@@ -63,8 +65,16 @@ class ImageDiff:
 
         if interactive:
             self.show_plt_diff(imageA, imageB, m, s, title, msg)
+        print(d)
+        print(d)
         
+        diff = self.get_diff(imageA, imageB)
+
+
         cv2.imshow("Diff", d)
+        cv2.imshow("Diff(stand)", diff)        
+        cv2.imshow("Thresh", thresh)
+        cv2.waitKey(0)
 
         return m, s, msg
 
