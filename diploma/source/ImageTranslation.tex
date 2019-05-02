@@ -748,12 +748,13 @@
 
 			\begin{figure}[ht]
 				\includegraphics[width=0.9\textwidth]{img/vgg16}
-					\caption{Модель глубокой сверточной сети VGG}
+					\caption{Модель глубокой сверточной сети VGG16}
 				\label{pic:model}
 			\end{figure}
 			\noindent
-			VGG -- это сеть нового поколения, построенная как усовершенствованная версия AlexNet \cite{AlexNet}. 
+			VGG16 -- это сеть нового поколения, построенная как усовершенствованная версия AlexNet \cite{AlexNet}. 
 			VGG сопоставимая по точности с ResNet, но в обучении без учителя обладает большей стабильностью \cite{MUNIT}.
+			Также проводилась серия обучений без использования VGG16 и показано, какой ощутимый прирост в качестве дает предобученная модель. 
 
 
 \newpage
@@ -820,14 +821,18 @@
 			Обучение проходило на изображениях из датасета NEXET \cite{data:nexet}, с распределением тренировочных и тестовых примеров в соотношених 9:1 и 1:1.
 			Проводилась искуственная аугментация данных: повороты, обрезания и изменения размера, о чем уже упомяналось в разделе \ref{sec:model}.
 			Помимо этого обучение проводилось на размеченных данных, без отделения от ошибочных и на соовокупности с датасетом BDD100K \cite{data:bdd100k}, после чего  проводится сравнение полученных результатов.
-
-
-	\subsection{Использованный инструментарий}\label{sec:tools}
 			
-	\subsection{Проведенные эксперименты}\label{sec:learning}
+			
+	\subsection{Эксперименты}\label{sec:learning}
+
+		\subsubsection{Использованный инструментарий}\label{sec:tools}
+	
+			В работе я использовал различные средства для проведения вычислений и обучения.
+			Большая часть экспериментов была поставлена на графических картах лаборатории: NVIDIA GTX 1080 Ti, но также вычисления проводились на сервере Google Colaboratory с помощью Tesla K80 \cite{colab} и на видеокарте NVIDIA RTX 2080.
 
 			
-	\subsection{Полученные результаты}\label{sec:results}
+
+	\subsection{Результаты}\label{sec:results}
 
 % \newpage
 % \section{Программная реализация}\label{sec:code}
@@ -966,6 +971,10 @@
 	\href{http://efrosgans.eecs.berkeley.edu/pix2pix/datasets/}{\textbf{\underline{Paired WebCam Night2Day Dataset}}},
 	UC Berkley, pix2pix and BycicleGAN projects,
 	2018
+
+	\bibitem{colab}
+	\href{https://colab.research.google.com/}{\underline{\textbf{Google Colaboratory}}},
+	Google Research Server, Tesla K80
 
 \end{thebibliography}
 
