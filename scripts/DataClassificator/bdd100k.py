@@ -22,9 +22,20 @@ def parse_labels_bdd(labels):
     if 'attributes' in labels:
          attr = labels['attributes']
 
-    for name in labels:
-        print(name)
-        break
+    to_log('-' * 50)
+    for pic in tqdm(labels):
+        img = pic['name']
+        time = pic['attributes']['timeofday']
+        if time == 'night':
+            time = 'Night'
+        elif time == 'daytime':
+            time = 'Day'
+        elif time == 'dawn/dusk':
+            time = 'Twilight'
+        else:
+            to_log(time, img)
+            continue
+        df = df.append({"image_filename": img, "lighting": time}, ignore_index=True)
     return df
     # df = df.append({"image_filename": img, "lighting": time, "pixels_light": light}, ignore_index=True)
         # print(f'Append {i} lines to {csv_new}...', end='\r')
