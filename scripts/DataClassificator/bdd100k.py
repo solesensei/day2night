@@ -7,7 +7,7 @@ from tqdm import tqdm
 col_names = ['image_filename', 'lighting']
 labels_path = '/mnt/w/prj/data/bdd100k/labels/bdd100k_labels_images_train.json'
 data_path = '/mnt/w/prj/data/bdd100k/images/100k/train/'
-csv_file = 'bdd100k_real.csv'
+csv_file = './data/bdd100k_real.csv'
 # ----------------------------------------------------------------
 
 def to_log(*args):

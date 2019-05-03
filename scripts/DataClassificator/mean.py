@@ -1,7 +1,7 @@
 import pandas as pd
 import numpy as np
 
-csvpath = './nexet_builded.csv'
+csvpath = './data/nexet_builded.csv'
 
 csv = pd.read_csv(csvpath, sep=',', encoding='utf8', skipinitialspace=True)
 
