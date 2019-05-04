@@ -43,24 +43,6 @@
 \newsavebox{\twosubbox}
 \setlength\headheight{26pt}
 
-\lstdefinestyle{codestyle}{
-    backgroundcolor=\color{backcolour},   
-    commentstyle=\color{Green},
-    breakatwhitespace=false,         
-    breaklines=true,                 
-    captionpos=b,                    
-    keepspaces=true,                 
-    showspaces=false,                
-    showstringspaces=false,
-    showtabs=false,                  
-    tabsize=2,
-    autogobble=true,
-    inputencoding=utf8x,
-    extendedchars=\true
-}
-
-\lstset{style=codestyle}
-
 \newenvironment{compactlist}{
 \begin{list}{{$\bullet$}}{
 \setlength\partopsep{0pt}
@@ -676,7 +658,7 @@
 							Кодировщики \(E_1,E_2\) преобразуют изображения в скрытый представление \(z\),
 							генераторы \(G_1,G_2\) восстанавливают изображения \(\tilde{x}^{1 \rightarrow 1}_1,\tilde{x}^{2 \rightarrow 2}_2\) (пунктирные стрелки)
 							и генерируют изображения в противоположные домены \(\tilde{x}^{1 \rightarrow 2}_1, \tilde{x}^{2 \rightarrow 1}_2\) (сплошные стрелки) из скрытого представления,
-							дискриминаторы \(D_1,D_2\) отвечают за реалистичность и отличают настоящие изображения от сгенерированных.
+							дискриминаторы \(D_1,D_2\) отвечают за реалистичность и отличают настоящие изображения \((x_1, x_2)\) от сгенерированных \((\tilde{x}_2^{2 \rightarrow 1},\tilde{x}_1^{1 \rightarrow 2})\).
 							Пунктирными серыми линиями отражены связи между последними слоями кодировщиков и первыми слоями генераторов, отвечающими за извлечение верхнеуровневой информации.
 						}}
 				\label{pic:model}
@@ -811,8 +793,25 @@
 			\end{figure}
 
 			\noindent
-			Ошибочные данные были отделены от тренировочных до начала обучения.
-			Подробнее о том, как проводился поиск и разметка изображений описано в практическом разделе \ref{sec:prac}.
+			Для исправляющей разметки датасетов был написан Python скрипт \texttt{detect\_day\_night.py}, определяющий время суток по яркости изображения.
+			Результат применения его к одному из датасетов ниже:
+			\begin{figure}[ht]
+				\centering
+				\includegraphics[width=0.6\textwidth]{img/histogram60}
+				\caption{Гистограмма распределения яркости изображений в датасете NEXET}{
+					\small{
+						возвышение слева -- коэфициент яркости меньше, темнее, ночь;
+						возвышение справа -- день
+					}
+				}
+				\label{pic:hist_detect}
+			\end{figure}
+
+			\noindent
+			Эксперементальным путем было установлено, что данные находящиеся по коэффициенту яркости в дипозоне от \(60 < \gamma \le 68\) с большей вероятностью относятся к спорным данным.
+			Скрипт проводит сравнение с официальной разметкой, где выявяет несовпадения, после чего ошибочные данные отделяются от тренировочных.
+			
+		
 
 		\subsubsection*{Распределение собранных данных на домены}
 
@@ -826,6 +825,7 @@
 	\subsection{Эксперименты}\label{sec:learning}
 
 		\subsubsection{Проведенные эксперименты}
+			
 
 		\subsubsection{Эксперементальная оценка}
 			
@@ -862,6 +862,7 @@
 			
 \newpage
 \section{Заключение}\label{sec:conclusion}
+
 
 \newpage
 
@@ -974,6 +975,11 @@
 	\textbf{The State of the Octoverse: machine learning} --
 	\href{https://github.blog/2019-01-24-the-state-of-the-octoverse-machine-learning/}{\underline{GitHub: Report}},
 	January 2019.
+
+	\bibitem{day2night}
+	\textbf{The Repository of Day2Night Research} --
+	\href{https://github.com/solesensei/day2night}{\underline{source code}},
+	May 2019.
 
 	\bibitem{data:nexet}
 	\href{https://www.getnexar.com/challenge-2/}{\textbf{\underline{NEXET Dataset}}},
