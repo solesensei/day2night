@@ -3,9 +3,10 @@ from datetime import timedelta
 from tqdm import tqdm
 import imageio
 
-img_dir = '/home/sole/Documents/alderley/FRAMESA/'
-day_vid = '/home/sole/Documents/alderley/day1_orig.avi'
-night_vid = '/home/sole/Documents/alderley/night1_orig.avi'
+day_dir = '/mnt/w/prj/data/alderley/FRAMESA/'
+day_dir = '/mnt/w/prj/data/alderley/FRAMESB/'
+day_vid = '/mnt/w/prj/data/alderley/day1_orig.avi'
+night_vid = '/mnt/w/prj/data/alderley/night1_orig.avi'
 
 
 def vid2gif(video_path, gif_path, fps=-1, duration=-1):
@@ -17,6 +18,10 @@ def vid2gif(video_path, gif_path, fps=-1, duration=-1):
     else:
         reader = imageio.get_reader(video_path, fps=fps)
     vid_format = os.path.splitext(os.path.basename(video_path))[1].upper()
+    fps = vid_fps = reader.get_meta_data()['fps']
+    vid_len = int(reader.get_meta_data()['duration'])
+    vid_flen = str(timedelta(seconds=vid_len))
+    frames = vid_frames = int(vid_len * vid_fps)
     vid_fps = reader.get_meta_data()['fps']
     vid_len = int(reader.get_meta_data()['duration'])
     vid_flen = str(timedelta(seconds=vid_len))
@@ -36,9 +41,9 @@ def vid2gif(video_path, gif_path, fps=-1, duration=-1):
 
     with imageio.get_writer(gif_path, mode='I', fps=fps) as writer:
         for i,image in enumerate(tqdm(reader, total=frames)):
-            writer.append_data(image)
-            if i+1 == frames:
+            if i == frames:
                 break
+            writer.append_data(image)
     reader.close()
     print(f'Complete!')
 
@@ -105,15 +110,17 @@ def vid2img(video_path, images_dir, fps=-1, duration=-1):
     print(f'Save Frames: {frames}')
 
     for i, image in enumerate(tqdm(reader, total=frames)):
+        if i == frames:
+            break
         img_name = f'{images_dir}/image{str(i+1).zfill(7)}.png'
         imageio.imwrite(img_name, image)
-        if i+1 == frames:
-            break
     reader.close()
     print(f'Complete!')
 
 
-vid2img(path2vid, './img', fps=4, duration=20)
-img2gif('img', 'img.gif', fps=4)
+# vid2img(night_vid, 'img/night_orig', fps=5, duration=20)
+# vid2img(day_vid, 'img/day_orig', fps=5, duration=20)
+img2gif('img/day_orig', 'gif/day_orig.gif', fps=5)
+img2gif('img/night_orig', 'gif/night_orig.gif', fps=5)
 # vid2gif(path2vid, path2gif)
 # vid2gif("/home/sole/Documents/alderley/night1_orig.avi", 'night.gif')\
