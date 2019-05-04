@@ -2,13 +2,14 @@
 image_save_iter: 10000           # How often do you want to save output images during training
 image_display_iter: 50000       # How often do you want to display output images during training
 display_size: 8                 # How many images do you want to display each time
-snapshot_save_iter: 2000        # How often do you want to save trained models
-snapshot_smart_override: True   # Use to smart cleaning old snapshots while sabing  
+snapshot_save_iter: 1000        # How often do you want to save trained models
+snapshot_smart_override: True   # Use to smart cleaning old snapshots while clearing  
 log_iter: 10                    # How often do you want to log the training stats
+
 
 # optimization options
 max_iter: 1000000             # maximum number of training iterations
-batch_size: 1                 # batch size
+batch_size: 1                 # 64, 128, 512 batch size
 weight_decay: 0.0001          # weight decay
 beta1: 0.5                    # Adam parameter
 beta2: 0.999                  # Adam parameter
@@ -23,7 +24,8 @@ recon_h_w: 0                  # weight of hidden reconstruction loss
 recon_kl_w: 0.01              # weight of KL loss for reconstruction
 recon_x_cyc_w: 10             # weight of cycle consistency loss
 recon_kl_cyc_w: 0.01          # weight of KL loss for cycle consistency
-vgg_w: 0                      # weight of domain-invariant perceptual loss
+vgg_w: 1                      # weight of domain-invariant perceptual loss
+resnet_w: 0                   # use resnet_w as a pt model
 
 # model options
 gen:
