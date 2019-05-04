@@ -1,4 +1,8 @@
-Pillow==5.4.1
+numpy==1.16.1
+pandas==0.24.1
+Pillow==6.0.0
+imageio==2.5.0
+imutils==0.5.2
 matplotlib==3.0.3
-numpy==1.16.2
-pandas==0.24.2
+skimage==0.0
+tqdm==4.31.1
