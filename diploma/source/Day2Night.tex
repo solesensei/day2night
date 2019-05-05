@@ -763,7 +763,7 @@
 			\item NEXET~\cite{data:nexet} -- набор из 50тыс. разнообразных дорожных размеченных изображений дня, ночи и сумерек. Данные расположены в одной директории, метки хранятся в \texttt{.csv} файле.
 			\item BDD100K~\cite{data:bdd100k} -- набор из 100тыс. разнообразных дорожных изображений, изображения разбиты на тестовую и тренировочную выборки в соотношении 2:7, размечены только тренировочные данные, метки хранятся в \texttt{.json} файле.
 			\item Alderley DayNight~\cite{data:alderley} -- набор из 15тыс. пар дорожных изображений, предоставлены в виде двух доменов: дня и ночи. 
-			\item Night2Day Paired~\cite{data:paired_night2day} -- набор из 17тыс. пар изображений c веб-камер в низком разрешении, предоставлены в виде соединения.
+			\item Night2Day Paired~\cite{data:paired_night2day} -- набор из 17тыс. пар изображений c веб-камер в низком разрешении, предоставлены соединенными.
 		\end{enumerate}
 		\noindent
 		Из датасетов выше:~\cite{data:alderley,data:paired_night2day} содержат недостаточное число изображений в низком разрешении для переноса обучения на другие данные. Alderley представляет собой кадры снятые только в одном месте -- в пригороде Олдерли, Квинсленд.
@@ -887,15 +887,15 @@
 				\begin{tabular}{|c|c|c|c|c|c|c|}
 					\hline
 					\rowcolor[HTML]{AFD7AF} 
-					\cellcolor[HTML]{EFEFEF}{\color[HTML]{CB0000} \textbf{Параметры обучения}} & \multicolumn{4}{c|}{\cellcolor[HTML]{AFD7AF}\textbf{Используемые нормазизации}} & \multicolumn{2}{c|}{\cellcolor[HTML]{F7C7B1}\textbf{Модели}}     \\ \hline
+					\cellcolor[HTML]{EFEFEF}{\color[HTML]{CB0000} \textbf{Параметры обучения}} & \multicolumn{4}{c|}{\cellcolor[HTML]{AFD7AF}\textbf{Используемые нормализации}} & \multicolumn{2}{c|}{\cellcolor[HTML]{F7C7B1}\textbf{Модели}}     \\ \hline
 					\rowcolor[HTML]{AFD7AF} 
 					\cellcolor[HTML]{B6C0D0}\textbf{Датасет}                                   & \textbf{Нет}     & \textbf{Batch}~\cite{n_batch}    & \textbf{Layer}~\cite{n_layer}    & \textbf{Instance}~\cite{n_instance}    & \cellcolor[HTML]{F7C7B1}\textbf{Нет} & \cellcolor[HTML]{F7C7B1}\textbf{VGG16} \\ \hline
 					\rowcolor[HTML]{EFEFEF} 
 					NEXET                                                                      & $\checkmark$     & \textbf{---}      & \textbf{---}      & \textbf{---}         & $\checkmark$                         & \textbf{---}                           \\ \hline
-					NEXET+аугментация                                                        & $\checkmark$     & $\checkmark$      & $\checkmark$      & \textbf{---}         & $\checkmark$                         & $\checkmark$                           \\ \hline
+					NEXET+аугментация                                                        & $\checkmark$     & \textbf{---}      & \textbf{---}      & \textbf{---}         & $\checkmark$                         & $\checkmark$                           \\ \hline
 					\rowcolor[HTML]{EFEFEF} 
 					NEXET+скрипт\footnotemark[2]                                                & $\checkmark$     & $\checkmark$      & $\checkmark$      & $\checkmark$         & $\checkmark$                         & $\checkmark$                           \\ \hline
-					NEXET+BDD100K                                                              & $\checkmark$     & $\checkmark$      & \textbf{---}      & $\checkmark$         & \textbf{---}                         & \cellcolor[HTML]{FFFFFF}$\checkmark$   \\ \hline
+					NEXET+BDD100K                                                              & $\checkmark$	     & \textbf{---}      & $\checkmark$        & $\checkmark$         & \textbf{---}                         & \cellcolor[HTML]{FFFFFF}$\checkmark$   \\ \hline
 				\end{tabular}
 				\caption{Параметры нейронной сети в ходе экспериментов}{
 					\small{
@@ -953,7 +953,7 @@
 				\end{figure}
 				
 				\noindent
-				На этом этапе перенос ночи в день был все еще неуспешным. На перенесенных изображениях присутствовало большое число артефактов, а цвета были сильно искажены.
+				На этом этапе перенос ночи в день все еще был неуспешным. На перенесенных изображениях присутствовало большое число артефактов, а цвета были сильно искажены.
 				Альтернативные стратегии разбиения данных на домены: другое соотношение тренировочных и тестовых примеров, изменение разрешения изображенй, перемешивание изображений -- также не увенчались успехом.
 				
 				В процессе экспериментов было обнаружено, что изображения дня находятся не в своем домене, рис.~\ref{pic:nexet_mis}, поэтому дальнейшие попытки обучения временно были прекращены, и начался поиск решения проблемы с разметкой данных, см. раздел~\ref{sec:classify_images}.
@@ -962,7 +962,17 @@
 				
 				После программной обработки датасета, оказалось, что более 5000 изображений имели несовпадающие метки, рис.~\ref{pic:nexet_mis}.
 				После отделения ошибочных данных и перегруппировки доменов, обучение провелось еще раз.
-				 
+				Также проводились эксперименты с добавлением слоев нормализации в состязательных сетях, что теоретически может разрешить проблему с искаженными цветами.
+
+				\begin{figure}[ht]
+					\centering
+					\includegraphics[width=0.9\textwidth]{img/loss_gen}
+					\caption{Графики функция потерь при обучении на NEXET}
+					\label{pic:loss_gen}
+				\end{figure}
+				
+				\noindent
+				Исходя из графиков видно, что значения функция потерь довольно близки 
 
 			\subsubsection*{Эксперименты на объединенной базе изображений NEXET и BDD100K}\label{sec:tests:nexet_bdd}
 
@@ -971,6 +981,16 @@
 			
 
 	\subsection{Результаты}\label{sec:results}
+		\begin{figure}[ht]
+			\centering
+			\includegraphics[width=\textwidth]{img/results}
+			\caption{Результаты работы метода}{
+				\small{
+					сверху-вниз: вход, реконструкция, перенос между доменами
+				}
+			}
+			\label{pic:results}
+		\end{figure}
 
 \newpage
 \section{Программная реализация}\label{sec:prac}

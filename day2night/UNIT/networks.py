@@ -341,6 +341,8 @@ class Conv2dBlock(nn.Module):
         norm_dim = output_dim
         if norm == 'bn':
             self.norm = nn.BatchNorm2d(norm_dim)
+        elif norm == 'gn':
+            self.norm = nn.GroupNorm(2,norm_dim)
         elif norm == 'in':
             #self.norm = nn.InstanceNorm2d(norm_dim, track_running_stats=True)
             self.norm = nn.InstanceNorm2d(norm_dim)
@@ -391,6 +393,8 @@ class LinearBlock(nn.Module):
         norm_dim = output_dim
         if norm == 'bn':
             self.norm = nn.BatchNorm1d(norm_dim)
+        elif norm == 'gn':
+            self.norm = nn.GroupNorm(2,norm_dim)
         elif norm == 'in':
             self.norm = nn.InstanceNorm1d(norm_dim)
         elif norm == 'ln':
