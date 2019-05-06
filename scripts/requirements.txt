@@ -4,5 +4,5 @@ Pillow==6.0.0
 imageio==2.5.0
 imutils==0.5.2
 matplotlib==3.0.3
-skimage==0.0
+scikit-image
 tqdm==4.31.1
