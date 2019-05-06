@@ -31,8 +31,8 @@ else
 	echo "Docker temporary: False"
 fi
 echo "-------------------------------------------------------"
-echo "To Train use: bash /mnt/w/prj/UNIT/scripts/train.sh"
-echo "To Test use: bash /mnt/w/prj/UNIT/scripts/test.sh"
+echo "To Train use: bash ./scripts/train.sh"
+echo "To Test use: bash ./scripts/test.sh"
 sleep 3
 docker run -it -p $PORT:$PORT $RM --name $NAME --mount type=bind,source=$PWD,target=/mnt/w/prj -w /mnt/w/prj/UNIT --runtime nvidia -i -t solesensei/day2night:$TAG
 echo "Script complete"
