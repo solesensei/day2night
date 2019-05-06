@@ -15,6 +15,7 @@ class ImageDiff:
     def __init__(self, grayscale=True):
         self.images = {}
         self.grayscale = grayscale
+        self.color = 'BGR'
 
     def mse(self, imageA, imageB):
         """
@@ -50,11 +51,15 @@ class ImageDiff:
     def get_diff(self, imageA, imageB):
         return cv2.subtract(imageA, imageB)
 
-    def get_threshold(self, imageA, imageB):
+    def get_threshold(self, imageA, imageB, rgb=False):
         _, diff = self.ssim(imageA, imageB, full=True)
         if not self.grayscale:
-            return cv2.inRange(diff, np.array([0, 125, 0]), np.array([255, 200, 255]), diff)
-        return cv2.threshold(diff, 0, 255, cv2.THRESH_BINARY_INV | cv2.THRESH_OTSU)[1]
+            t = cv2.inRange(diff, np.array([0, 125, 0]), np.array([255, 200, 255]), diff)
+        else:
+            t = cv2.threshold(diff, 0, 255, cv2.THRESH_BINARY_INV | cv2.THRESH_OTSU)[1]
+        if rgb:
+            t = self._rgb(t)
+        return t
 
     def get_contours(self, imageA, imageB):
         t = self.get_threshold(imageA, imageB)
@@ -88,13 +93,12 @@ class ImageDiff:
         if interactive:
             d = self.get_diff(imageA, imageB)
             a = self.get_absdiff(imageA, imageB)
-            t = self.get_threshold(imageA, imageB)
+            t = self.get_threshold(imageA, imageB, rgb=(not self.grayscale))
             self.draw_boxes(imageA, imageB)
-            t = self._rgb(t)
             c = self.get_concated(imageA, imageB, d, a, sd, t, to_rgb=False)
-            self.show_image(c, title="in,out,diff,abs,thresh, ssim", wait=True)
+            self.show_image(c, title=f"{self.color}: in, out, diff, abs, ssim, thresh", wait=True)
             c = self.get_concated(imageA, imageB, d, a, sd, t, to_rgb=True)
-            self.show_image(c, title="in,out,diff,abs,thresh, ssim", wait=True)
+            self.show_image(c, title=f"{self.color}: in, out, diff, abs, ssim, thresh", wait=True)
             self.show_cmp_plot(imageA, imageB, m, s, title, msg)
 
         return m, s, msg
@@ -165,13 +169,13 @@ class ImageDiff:
             plt.imshow(imageB)
         plt.axis("off")
 
-    def _rgb(self, *images, globaly=True):
+    def _rgb(self, *images, globaly=False):
         if len(images) == 1:
             if len(images[0].shape) == 2:
                 return cv2.cvtColor(images[0], cv2.COLOR_GRAY2RGB)
             return cv2.cvtColor(images[0], cv2.COLOR_BGR2RGB)
         if globaly:
-            self.grayscale = False
+            self.color = 'RGB' if self.color == 'BGR' else 'BGR'
         colored = []
         for im in images:
             if len(im.shape) == 2:
@@ -207,7 +211,7 @@ class ImageDiff:
         if n % 2 != 0:
             n += 1
         if to_rgb:
-            images = self._rgb(*images, globaly=False)
+            images = self._rgb(*images, globaly=True)
         concat1 = np.hstack((images[:n // 2]))
         concat2 = np.hstack((images[n // 2:]))
         d = abs(concat1.shape[1] - concat2.shape[1])
