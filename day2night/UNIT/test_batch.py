@@ -6,6 +6,7 @@ from __future__ import print_function
 from utils import get_config, get_data_loader_folder, pytorch03_to_pytorch04
 from trainer import MUNIT_Trainer, UNIT_Trainer
 import argparse
+from subprocess import call
 from torch.autograd import Variable
 from data import ImageFolder
 import torchvision.utils as vutils
@@ -17,33 +18,54 @@ import sys
 import torch
 import os
 
+def usage():
+    parser = argparse.ArgumentParser()
+    parser.add_argument('--config', type=str, help="path net configuration", required=True)
+    parser.add_argument('--input_folder', type=str, help="input image folder", required=True)
+    parser.add_argument('--output_folder', type=str, help="output image path", required=True)
+    parser.add_argument('--checkpoint', type=str, help="checkpoint of autoencoders", required=True)
+    parser.add_argument('--a2b', type=int, help="1 for a2b and others for b2a", default=1)
+    parser.add_argument('--seed', type=int, default=1, help="random seed")
+    parser.add_argument('--num_style',type=int, default=10, help="number of styles to sample")
+    parser.add_argument('--synchronized', action='store_true', help="whether use synchronized style code or not")
+    parser.add_argument('--output_only', action='store_true', help="whether use synchronized style code or not")
+    parser.add_argument('--output_path', type=str, default='.', help="path for logs, checkpoints, and VGG model weight")
+    parser.add_argument('--trainer', type=str, default='UNIT', help="MUNIT|UNIT")
+    parser.add_argument('--device', metavar='GPU', nargs='+', help='GPU List', default=["0"])
+    parser = argparse.ArgumentParser()
+    return parser.parse_args()
 
-parser = argparse.ArgumentParser()
-parser.add_argument('--config', type=str, default='configs/edges2handbags_folder', help='Path to the config file.')
-parser.add_argument('--input_folder', type=str, help="input image folder")
-parser.add_argument('--output_folder', type=str, help="output image folder")
-parser.add_argument('--checkpoint', type=str, help="checkpoint of autoencoders")
-parser.add_argument('--a2b', type=int, help="1 for a2b and others for b2a", default=1)
-parser.add_argument('--seed', type=int, default=1, help="random seed")
-parser.add_argument('--num_style',type=int, default=10, help="number of styles to sample")
-parser.add_argument('--synchronized', action='store_true', help="whether use synchronized style code or not")
-parser.add_argument('--output_only', action='store_true', help="whether use synchronized style code or not")
-parser.add_argument('--output_path', type=str, default='.', help="path for logs, checkpoints, and VGG model weight")
-parser.add_argument('--trainer', type=str, default='MUNIT', help="MUNIT|UNIT")
+opts = usage()
 
-opts = parser.parse_args()
-
+# Choose GPU device to run
+os.environ["CUDA_DEVICE_ORDER"]="PCI_BUS_ID" 
+os.environ["CUDA_VISIBLE_DEVICES"]=",".join(str(x) for x in opts.device)
 
 torch.manual_seed(opts.seed)
 torch.cuda.manual_seed(opts.seed)
+if not os.path.exists(opts.output_folder):
+    os.makedirs(opts.output_folder)
 
-# Load experiment setting
+# Print System Info 
+print('CUDA Devices')
+call(["nvidia-smi", "--format=csv", "--query-gpu=index,name,driver_version,memory.total,memory.used,memory.free"])
+print(f'Available devices {torch.cuda.device_count()}: {", ".join(str(x) for x in opts.device)}')
+print('Active CUDA Device: GPU', torch.cuda.current_device())
+
+print('Load experiment setting')
 config = get_config(opts.config)
 input_dim = config['input_dim_a'] if opts.a2b else config['input_dim_b']
 
-# Setup model and data loader
+print('Setup model and data loader')
+if 'new_size' in config:
+    new_size = config['new_size']
+else:
+    if opts.a2b==1:
+        new_size = config['new_size_a']
+    else:
+        new_size = config['new_size_b']
 image_names = ImageFolder(opts.input_folder, transform=None, return_paths=True)
-data_loader = get_data_loader_folder(opts.input_folder, 1, False, new_size=config['new_size_a'], crop=False)
+data_loader = get_data_loader_folder(opts.input_folder, 1, False, new_size=new_size, crop=False)
 
 config['vgg_model_path'] = opts.output_path
 config['resnet_model_path'] = opts.output_path
@@ -70,7 +92,8 @@ encode = trainer.gen_a.encode if opts.a2b else trainer.gen_b.encode # encode fun
 decode = trainer.gen_b.decode if opts.a2b else trainer.gen_a.decode # decode function
 
 if opts.trainer == 'MUNIT':
-    # Start testing
+
+    print('Start testing')
     style_fixed = Variable(torch.randn(opts.num_style, style_dim, 1, 1).cuda(), volatile=True)
     for i, (images, names) in enumerate(zip(data_loader, image_names)):
         print(names[1])
@@ -90,8 +113,10 @@ if opts.trainer == 'MUNIT':
         if not opts.output_only:
             # also save input images
             vutils.save_image(images.data, os.path.join(opts.output_folder, 'input{:03d}.jpg'.format(i)), padding=0, normalize=True)
+    print('Start testing')
 elif opts.trainer == 'UNIT':
-    # Start testing
+
+    print('Start testing')
     for i, (images, names) in enumerate(zip(data_loader, image_names)):
         print(names[1])
         images = Variable(images.cuda(), volatile=True)
@@ -108,5 +133,6 @@ elif opts.trainer == 'UNIT':
         if not opts.output_only:
             # also save input images
             vutils.save_image(images.data, os.path.join(opts.output_folder, 'input{:03d}.jpg'.format(i)), padding=0, normalize=True)
+    print('Start testing')
 else:
     pass
