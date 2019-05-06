@@ -5,9 +5,9 @@
 image_save_iter: 10000           # How often do you want to save output images during training
 image_display_iter: 50000       # How often do you want to display output images during training
 display_size: 8                 # How many images do you want to display each time
-snapshot_save_iter: 1000        # How often do you want to save trained models
+snapshot_save_iter: 5000        # How often do you want to save trained models
 snapshot_smart_override: True   # Use to smart cleaning old snapshots while saving  
-log_iter: 10                    # How often do you want to log the training stats
+log_iter: 20                    # How often do you want to log the training stats
 
 # optimization options
 max_iter: 1000000             # maximum number of training iterations
@@ -36,7 +36,7 @@ gen:
   style_dim: 8                # length of style code
   activ: relu                 # activation function [relu/lrelu/prelu/selu/tanh]
   n_downsample: 2             # number of downsampling layers in content encoder
-  n_res: 9                    # number of residual blocks in content encoder/decoder
+  n_res: 4                    # number of residual blocks in content encoder/decoder
   pad_type: reflect           # padding type [zero/reflect]
 dis: 
   dim: 64                     # number of filters in the bottommost layer
