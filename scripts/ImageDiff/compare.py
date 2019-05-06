@@ -2,12 +2,14 @@ import os
 import json
 import cv2
 import numpy as np
+from time import sleep
 import matplotlib.pyplot as plt
 from skimage.measure import compare_ssim as ssim
 from imutils import grab_contours
 
 imageA = "img/1/Image00001.jpg"
 imageB = "img/2/Image00001.jpg"
+
 
 class ImageDiff:
     def __init__(self, grayscale=True):
@@ -26,7 +28,7 @@ class ImageDiff:
         if imageA.shape != imageB.shape:
             print("MSE: the two images must have the same dimension")
             return None
-        err = np.sum((imageA.astype("float") - imageB.astype("float")) ** 2)
+        err = np.sum((imageA.astype("float") - imageB.astype("float"))**2)
         err /= float(imageA.shape[0] * imageA.shape[1])
         return err
 
@@ -50,6 +52,8 @@ class ImageDiff:
 
     def get_threshold(self, imageA, imageB):
         _, diff = self.ssim(imageA, imageB, full=True)
+        if not self.grayscale:
+            return cv2.inRange(diff, np.array([0, 125, 0]), np.array([255, 200, 255]), diff)
         return cv2.threshold(diff, 0, 255, cv2.THRESH_BINARY_INV | cv2.THRESH_OTSU)[1]
 
     def get_contours(self, imageA, imageB):
@@ -60,8 +64,8 @@ class ImageDiff:
     def draw_boxes(self, imageA, imageB):
         for c in self.get_contours(imageA, imageB):
             (x, y, w, h) = cv2.boundingRect(c)
-            cv2.rectangle(imageA, (x, y), (x + w, y + h), (0, 0, 255), 2)
-            cv2.rectangle(imageB, (x, y), (x + w, y + h), (0, 0, 255), 2)
+            cv2.rectangle(imageA, (x, y), (x + w, y + h), (0, 0, 255), 1)
+            cv2.rectangle(imageB, (x, y), (x + w, y + h), (0, 0, 255), 1)
 
     def get_absdiff(self, imageA, imageB):
         return cv2.absdiff(imageA, imageB)
@@ -72,13 +76,12 @@ class ImageDiff:
 
     def compare_images(self, imageA, imageB, interactive=False, title='Compare'):
         m = self.mse(imageA, imageB)
-        s = self.ssim(imageA, imageB)
+        s, sd = self.ssim(imageA, imageB, full=True)
         is_equal = self.is_equal(imageA, imageB)
         if is_equal:
             msg = "The images are the same"
         else:
             msg = "The images are different"
-
 
         print(f"Title: {title} MSE: {m:.2f}, SSIM: {s:.6}, msg: {msg}")
 
@@ -87,11 +90,13 @@ class ImageDiff:
             a = self.get_absdiff(imageA, imageB)
             t = self.get_threshold(imageA, imageB)
             self.draw_boxes(imageA, imageB)
-            self.show_compared(imageA, imageB, m, s, title, msg)
-            self.show_image(d, "Diff")
-            self.show_image(a, "Absolute Diff")
-            self.show_image(a, "Threshold", wait=True)
-        
+            t = self._rgb(t)
+            c = self.get_concated(imageA, imageB, d, a, sd, t, to_rgb=False)
+            self.show_image(c, title="in,out,diff,abs,thresh, ssim", wait=True)
+            c = self.get_concated(imageA, imageB, d, a, sd, t, to_rgb=True)
+            self.show_image(c, title="in,out,diff,abs,thresh, ssim", wait=True)
+            self.show_cmp_plot(imageA, imageB, m, s, title, msg)
+
         return m, s, msg
 
     def compare_all(self, interactive=False):
@@ -160,6 +165,22 @@ class ImageDiff:
             plt.imshow(imageB)
         plt.axis("off")
 
+    def _rgb(self, *images, globaly=True):
+        if len(images) == 1:
+            if len(images[0].shape) == 2:
+                return cv2.cvtColor(images[0], cv2.COLOR_GRAY2RGB)
+            return cv2.cvtColor(images[0], cv2.COLOR_BGR2RGB)
+        if globaly:
+            self.grayscale = False
+        colored = []
+        for im in images:
+            if len(im.shape) == 2:
+                im = cv2.cvtColor(im, cv2.COLOR_GRAY2RGB)
+            else:
+                im = cv2.cvtColor(im, cv2.COLOR_BGR2RGB)
+            colored.append(im)
+        return colored
+
     def get_json_stats(self):
         j = {}
         for image, values in self.images.items():
@@ -173,9 +194,31 @@ class ImageDiff:
         j = self.get_json_stats()
         print(json.dumps(j, indent=4, sort_keys=True))
 
-    def show_compared(self, imageA, imageB, m, s, title, msg):
+    def show_cmp_plot(self, imageA, imageB, m, s, title, msg):
         self._setup_plt(imageA, imageB, m, s, title, msg)
         plt.show()
+
+    def get_concated(self, *images, to_rgb=True):
+        n = len(images)
+        if n < 2:
+            return images
+        if n == 2:
+            return np.hstack((images))
+        if n % 2 != 0:
+            n += 1
+        if to_rgb:
+            images = self._rgb(*images, globaly=False)
+        concat1 = np.hstack((images[:n // 2]))
+        concat2 = np.hstack((images[n // 2:]))
+        d = abs(concat1.shape[1] - concat2.shape[1])
+        if d > 0:
+            if self.grayscale:
+                empty = np.zeros((concat2.shape[0], d // 2), np.uint8)
+            else:
+                empty = np.zeros((concat2.shape[0], d // 2, 3), np.uint8)
+            empty[:, :] = 255
+            concat2 = np.hstack((empty, concat2, empty))
+        return np.vstack((concat1, concat2))
 
     def show_image(self, image, title="Image", wait=False):
         cv2.imshow(title, image)
@@ -207,9 +250,9 @@ class ImageDiff:
             print(f'Error: Save format {save_format} not supported')
 
 
-imdiff = ImageDiff(grayscale=True)
-images = imdiff.load_images(imageA, imageB)
-
+imdiff = ImageDiff(grayscale=False)
+imageA = imdiff.add_image(imageA)
+imageB = imdiff.add_image(imageB)
 
 imdiff.compare_all(interactive=True)
 imdiff.print_stats()
