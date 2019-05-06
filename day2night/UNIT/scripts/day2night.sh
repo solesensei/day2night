@@ -7,7 +7,7 @@ echo "Downloading project..."
 echo "-------------------------------------------------------"
 sleep 1
 wget --no-check-certificate -r "https://docs.google.com/uc?export=download&id=1mrj0vDzuFufpmxSW5SMIAn9XekegX4Hh" -O code.zip
-unzip code.zip
+unzip -o code.zip
 rm code.zip
 
 NAME=unit
