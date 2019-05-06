@@ -7,9 +7,6 @@ import matplotlib.pyplot as plt
 from skimage.measure import compare_ssim as ssim
 from imutils import grab_contours
 
-imageA = "img/1/Image00001.jpg"
-imageB = "img/2/Image00001.jpg"
-
 
 class ImageDiff:
     def __init__(self, grayscale=True):
@@ -114,15 +111,26 @@ class ImageDiff:
                 values['SSIM'] = s
                 values['msg'] = msg
 
+    def get_image(self, path, rgb=False):
+        image = cv2.imread(path)
+        if rgb:
+            return image
+        if self.grayscale:
+            return cv2.cvtColor(image, cv2.COLOR_BGR2GRAY)
+        return cv2.cvtColor(image, cv2.COLOR_BGR2RGB)
+
+    def del_image(self, name):
+        d = self.images.pop(name, None)
+        if d:
+            print(f'Image {name} deleted')
+        else:
+            print(f'No {name} image found')
+
     def add_image(self, path, name=None):
         if not os.path.exists(path) and (path.endswith('.png') or path.endswith('.jpg')):
             raise FileNotFoundError(f'No {path} image found. Supported ext: [.jpg|.png ]')
 
-        image = cv2.imread(path)
-        if self.grayscale:
-            image = cv2.cvtColor(image, cv2.COLOR_BGR2GRAY)
-        else:
-            image = cv2.cvtColor(image, cv2.COLOR_BGR2RGB)
+        image = self.get_image(path)
 
         if name is None:
             name = os.path.splitext(os.path.basename(path))[0]
@@ -206,12 +214,12 @@ class ImageDiff:
         n = len(images)
         if n < 2:
             return images
+        if to_rgb:
+            images = self._rgb(*images, globaly=True)
         if n == 2:
             return np.hstack((images))
         if n % 2 != 0:
             n += 1
-        if to_rgb:
-            images = self._rgb(*images, globaly=True)
         concat1 = np.hstack((images[:n // 2]))
         concat2 = np.hstack((images[n // 2:]))
         d = abs(concat1.shape[1] - concat2.shape[1])
@@ -254,11 +262,14 @@ class ImageDiff:
             print(f'Error: Save format {save_format} not supported')
 
 
-imdiff = ImageDiff(grayscale=False)
-imageA = imdiff.add_image(imageA)
-imageB = imdiff.add_image(imageB)
-
-imdiff.compare_all(interactive=True)
-imdiff.print_stats()
-imdiff.save_stats()
-imdiff.save_stats(save_format='csv')
+if __name__ == "__main__":
+    imageA = "img/1/Image00001.jpg"
+    imageB = "img/2/Image00001.jpg"
+    
+    imdiff = ImageDiff(grayscale=False)
+    imageA = imdiff.add_image(imageA)
+    imageB = imdiff.add_image(imageB)
+    imdiff.compare_all(interactive=True)
+    imdiff.print_stats()
+    imdiff.save_stats()
+    imdiff.save_stats(save_format='csv')
