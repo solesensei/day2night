@@ -32,7 +32,6 @@ def usage():
     parser.add_argument('--output_path', type=str, default='.', help="path for logs, checkpoints, and VGG model weight")
     parser.add_argument('--trainer', type=str, default='UNIT', help="MUNIT|UNIT")
     parser.add_argument('--device', metavar='GPU', nargs='+', help='GPU List', default=["0"])
-    parser = argparse.ArgumentParser()
     return parser.parse_args()
 
 opts = usage()
