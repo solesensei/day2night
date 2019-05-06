@@ -18,13 +18,23 @@ else
     vgg="NO"
     config="configs/unit_day2night_512.yaml"
 fi
+read -p "Config: $config correct? [y/n] (You can choose manualy if not) " c
+if [ "$c" == "n" ]; then
+    read -p "Set path to config: " config
+fi
 echo "------------------------------------------------------"
 echo " Starting training... "
 echo "------------------------------------------------------"
-echo " Use default config: $config"
-echo " Use VGG: $vgg"
 echo " Trainer: UNIT"
+echo " Use default config: $config"
+echo " GPU: $gpu"
 echo "------------------------------------------------------"
+read -p "It's okay ? [y/n] " ok
+if [ "$ok" == "n" ]; then
+    echo "Aborted."
+    exit 0
+fi
+echo "Launch testing script..."
 sleep 2
 python train.py --device $gpu --config $config --trainer UNIT
 echo " Completed! "

@@ -11,11 +11,10 @@ unzip code.zip
 rm code.zip
 
 NAME=unit
-TAG=pytorch_0.4.1
+TAG=pytorch_0.4.1_cuda9
 RM=""
 PORT=8080
 sleep 1
-
 echo "-------------------------------------------------------"
 echo "Pulling docker image: solesensei/day2night:$TAG"
 echo "-------------------------------------------------------"
@@ -34,5 +33,5 @@ fi
 echo "-------------------------------------------------------"
 echo "use: bash /mnt/w/prj/UNIT/scripts/run.sh"
 sleep 3
-docker run -it -p $PORT:$PORT $RM --name $NAME --mount type=bind,source="$PWD",target=/mnt/w/prj -w /mnt/w/prj --runtime nvidia -i -t solesensei/day2night:$TAG
+docker run -it -p $PORT:$PORT $RM --name $NAME --mount type=bind,source=./,target=/mnt/w/prj -w /mnt/w/prj --runtime nvidia -i -t solesensei/day2night:$TAG
 echo "Script complete"
