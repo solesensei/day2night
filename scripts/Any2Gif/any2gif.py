@@ -188,10 +188,10 @@ if __name__ == "__main__":
     day_vid = f'{data_dir}/day1_orig.avi'
     night_vid = f'{data_dir}/night1_orig.avi'
 
-    img2img('/mnt/w/prj/GraduateWork/day2night/UNIT/checkpoints/bdd_nexet_vgg/out/input', '/mnt/w/prj/GraduateWork/day2night/UNIT/checkpoints/bdd_nexet_vgg/out_b2a/input', concat=True, concat_dir='/mnt/w/prj/GraduateWork/day2night/UNIT/checkpoints/bdd_nexet_vgg/out/concat_orig')
-    img2img('/mnt/w/prj/GraduateWork/day2night/UNIT/checkpoints/bdd_nexet_vgg/out/concat_orig', '/mnt/w/prj/GraduateWork/day2night/UNIT/checkpoints/bdd_nexet_vgg/out', resize=2.2, concat=True, concat_dir='/mnt/w/prj/GraduateWork/day2night/UNIT/checkpoints/bdd_nexet_vgg/out/concat_3')
+    img2img('/mnt/w/prj/GraduateWork/day2night/UNIT/checkpoints/vgg/out/input', '/mnt/w/prj/GraduateWork/day2night/UNIT/checkpoints/vgg/out_b2a/input', concat=True, concat_dir='/mnt/w/prj/GraduateWork/day2night/UNIT/checkpoints/vgg/out/concat_orig')
+    img2img('/mnt/w/prj/GraduateWork/day2night/UNIT/checkpoints/vgg/out/concat_orig', '/mnt/w/prj/GraduateWork/day2night/UNIT/checkpoints/vgg/out', resize=1.5, concat=True, concat_dir='/mnt/w/prj/GraduateWork/day2night/UNIT/checkpoints/vgg/out/concat_3')
     # vid2img(night_vid, 'img/night_orig', fps=5, duration=20)
     # vid2img(day_vid, 'img/day_orig', fps=5, duration=20)
     # img2gif('img/day_orig', 'gif/day_orig.gif', fps=5)
     # img2gif('img/night_orig', 'gif/night_orig.gif', fps=5)
-    img2gif('/mnt/w/prj/GraduateWork/day2night/UNIT/checkpoints/bdd_nexet_vgg/out/concat_3', '/mnt/w/prj/GraduateWork/day2night/UNIT/checkpoints/bdd_nexet_vgg/out/concat_3/concat_3.gif', fps=10)
+    img2gif('/mnt/w/prj/GraduateWork/day2night/UNIT/checkpoints/vgg/out/concat_3', '/mnt/w/prj/GraduateWork/day2night/UNIT/checkpoints/vgg/out/concat_3/concat_3.gif', fps=8)

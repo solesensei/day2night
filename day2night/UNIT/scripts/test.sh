@@ -3,10 +3,10 @@
 checkdir="checkpoints/vgg"
 checkpoint="${checkdir}/gen_01000000.pt"
 config="configs/unit_day2night_vgg.yaml"
-indir="/mnt/w/prj/data/nexet/nexet_2017_1/testA"
-outdir="${checkdir}/out"
+indir="${checkdir}/out_b2a/input"
+outdir="${checkdir}/out_b2b"
 # ----------------------------------------------------------
-cd /mnt/w/prj/UNIT
+# cd /mnt/w/prj/UNIT
 mkdir -p $outdir
 
 echo "------------------------------------------------------"
