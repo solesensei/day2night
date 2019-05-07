@@ -45,6 +45,9 @@ torch.cuda.manual_seed(opts.seed)
 if not os.path.exists(opts.output_folder):
     os.makedirs(opts.output_folder)
 
+if not opts.output_only and not os.path.exists(os.path.join(opts.output_folder, 'input')):
+    os.makedirs(os.path.join(opts.output_folder, 'input'))
+
 # Print System Info 
 print('CUDA Devices')
 call(["nvidia-smi", "--format=csv", "--query-gpu=index,name,driver_version,memory.total,memory.used,memory.free"])
@@ -112,8 +115,8 @@ with torch.no_grad():
                 vutils.save_image(outputs.data, path, padding=0, normalize=True)
             if not opts.output_only:
                 # also save input images
-                vutils.save_image(images.data, os.path.join(opts.output_folder, 'input{:03d}.jpg'.format(i)), padding=0, normalize=True)
-        print('Start testing')
+                vutils.save_image(images.data, os.path.join(opts.output_folder, 'input/', "_%02d"%j,basename), padding=0, normalize=True)
+        print('Testing Сomplete!')
     elif opts.trainer == 'UNIT':
 
         print('Start testing')
@@ -132,7 +135,7 @@ with torch.no_grad():
             vutils.save_image(outputs.data, path, padding=0, normalize=True)
             if not opts.output_only:
                 # also save input images
-                vutils.save_image(images.data, os.path.join(opts.output_folder, 'input{:03d}.jpg'.format(i)), padding=0, normalize=True)
+                vutils.save_image(images.data, os.path.join(opts.output_folder, 'input/', basename), padding=0, normalize=True)
         print('Testing Complete')
     else:
         pass

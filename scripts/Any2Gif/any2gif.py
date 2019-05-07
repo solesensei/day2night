@@ -1,5 +1,6 @@
 import os
 import sys
+import numpy as np
 from datetime import timedelta
 from tqdm import tqdm
 import imageio
@@ -34,7 +35,7 @@ def vid2img(video_path, images_dir, fps=-1, duration=-1):
     print(f'Save Duration: {f_duration}')
     print(f'Save Frames: {frames}')
 
-    for i, image in enumerate(tqdm(reader, total=frames)):
+    for i, image in enumerate(tqdm(reader, total=frames, desc='Split video into frames')):
         if i == frames:
             break
         img_name = f'{images_dir}/image{str(i+1).zfill(7)}.png'
@@ -74,7 +75,7 @@ def vid2gif(video_path, gif_path, fps=-1, duration=-1):
     print(f'Save Frames: {frames}')
 
     with imageio.get_writer(gif_path, mode='I', fps=fps) as writer:
-        for i, image in enumerate(tqdm(reader, total=frames)):
+        for i, image in enumerate(tqdm(reader, total=frames, desc='Converting to GIF')):
             if i == frames:
                 break
             writer.append_data(image)
@@ -92,6 +93,8 @@ def img2gif(images_dir, gif_path, fps=2, duration=-1):
         for image in imgs:
             if image.endswith('.png') or image.endswith('.jpg'):
                 images.append(os.path.join(root, image))
+        break
+    images.sort()
     if not images:
         print(f'No images found in {images_dir}')
         return
@@ -109,7 +112,7 @@ def img2gif(images_dir, gif_path, fps=2, duration=-1):
     print(f'Save Frames: {frames}')
 
     with imageio.get_writer(gif_path, mode='I', fps=fps) as writer:
-        for i, image in enumerate(tqdm(images, total=frames)):
+        for i, image in enumerate(tqdm(images, total=frames, desc='Converting to GIF')):
             if i == frames:
                 break
             image = imageio.imread(image)
@@ -123,8 +126,7 @@ def img_resize(image, factor, opencv=False, save=False):
         return
     try:
         if opencv:
-            image[..., [0, 2]] = image[..., [2, 0]]
-            im = image
+            im = Image.fromarray(image)
         else:
             im = Image.open(image)
         s = max(im.size) // factor
@@ -132,26 +134,33 @@ def img_resize(image, factor, opencv=False, save=False):
         if save:
             outfile = os.path.splitext(image)[0] + "_r.png"
             im.save(outfile, "PNG")
+        if opencv:
+            return np.array(im)
         return im
     except IOError:
         print(f"Cannot create thumbnail for '{image}'")
 
 
-def img2img(images_dir_1, images_dir_2, resize=0, concat=0, concat_dir='img/concat'):
+def img2img(images_dir_1, images_dir_2, sort=True, resize=0, concat=0, concat_dir='img/concat'):
     images_1 = []
     for root, _, imgs in os.walk(images_dir_1):
         for image in imgs:
             if image.endswith('.png') or image.endswith('.jpg'):
                 images_1.append(os.path.join(root, image))
+        break
+    if sort:
+        images_1.sort()
     if concat:
         if not os.path.isdir(concat_dir):
-            print(f'No concat folder {concat_dir} found')
-            return
+            os.mkdir(concat_dir)
         images_2 = []
         for root, _, imgs in os.walk(images_dir_2):
             for image in imgs:
                 if image.endswith('.png') or image.endswith('.jpg'):
                     images_2.append(os.path.join(root, image))
+            break
+        if sort:
+            images_2.sort()
         imdiff = ImageDiff(grayscale=False)
         for (image_1, image_2) in tqdm(zip(images_1, images_2), total=min(len(images_1), len(images_2)), desc='Concatenation'):
             im_1 = imdiff.get_image(image_1, rgb=True)
@@ -179,9 +188,10 @@ if __name__ == "__main__":
     day_vid = f'{data_dir}/day1_orig.avi'
     night_vid = f'{data_dir}/night1_orig.avi'
 
-    # img2img('img/day_orig', 'img/night_orig', concat=True)
+    img2img('/mnt/w/prj/GraduateWork/day2night/UNIT/checkpoints/bdd_nexet_vgg/out/input', '/mnt/w/prj/GraduateWork/day2night/UNIT/checkpoints/bdd_nexet_vgg/out_b2a/input', concat=True, concat_dir='/mnt/w/prj/GraduateWork/day2night/UNIT/checkpoints/bdd_nexet_vgg/out/concat_orig')
+    img2img('/mnt/w/prj/GraduateWork/day2night/UNIT/checkpoints/bdd_nexet_vgg/out/concat_orig', '/mnt/w/prj/GraduateWork/day2night/UNIT/checkpoints/bdd_nexet_vgg/out', resize=2.2, concat=True, concat_dir='/mnt/w/prj/GraduateWork/day2night/UNIT/checkpoints/bdd_nexet_vgg/out/concat_3')
     # vid2img(night_vid, 'img/night_orig', fps=5, duration=20)
     # vid2img(day_vid, 'img/day_orig', fps=5, duration=20)
     # img2gif('img/day_orig', 'gif/day_orig.gif', fps=5)
     # img2gif('img/night_orig', 'gif/night_orig.gif', fps=5)
-    img2gif('img/concat', 'gif/concat_orig.gif', fps=5)
+    img2gif('/mnt/w/prj/GraduateWork/day2night/UNIT/checkpoints/bdd_nexet_vgg/out/concat_3', '/mnt/w/prj/GraduateWork/day2night/UNIT/checkpoints/bdd_nexet_vgg/out/concat_3/concat_3.gif', fps=10)

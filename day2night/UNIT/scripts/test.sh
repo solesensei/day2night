@@ -1,10 +1,10 @@
 #!/bin/bash
 # ----------------------- parameters -----------------------
-checkdir="checkpoints/vgg_bn"
+checkdir="checkpoints/vgg"
 checkpoint="${checkdir}/gen_01000000.pt"
-config="configs/unit_day2night_vgg_bn.yaml"
-indir="/mnt/w/prj/GraduateWork/scripts/Any2Gif/img/night_orig"
-outdir="${checkdir}/out_b2a"
+config="configs/unit_day2night_vgg.yaml"
+indir="/home/sole/prj/GraduateWork/scripts/Any2Gif/img/day_orig"
+outdir="${checkdir}/out"
 # ----------------------------------------------------------
 cd /mnt/w/prj/UNIT
 mkdir -p $outdir
@@ -50,5 +50,5 @@ fi
 echo "Launch testing script..."
 sleep 2
 
-python test_batch.py --device $gpu --config $config --input_folder $indir --output_folder $outdir --output_only --checkpoint $checkpoint --a2b $d2n --trainer UNIT
+python test_batch.py --device $gpu --config $config --input_folder $indir --output_folder $outdir --checkpoint $checkpoint --a2b $d2n --trainer UNIT
 echo " Completed! "
