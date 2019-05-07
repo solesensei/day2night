@@ -17,3 +17,4 @@
 
 # Folders
 scripts/ImageDiff/images/
+__pycache__
