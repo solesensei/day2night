@@ -3,7 +3,7 @@
 checkdir="checkpoints/vgg"
 checkpoint="${checkdir}/gen_01000000.pt"
 config="configs/unit_day2night_vgg.yaml"
-indir="/home/sole/prj/GraduateWork/scripts/Any2Gif/img/day_orig"
+indir="/mnt/w/prj/GraduateWork/scripts/Any2Gif/img/night_orig"
 outdir="${checkdir}/out"
 # ----------------------------------------------------------
 cd /mnt/w/prj/UNIT
