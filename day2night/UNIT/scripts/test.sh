@@ -1,19 +1,19 @@
 #!/bin/bash
 # ----------------------- parameters -----------------------
-checkdir="checkpoints/vgg"
+checkdir="checkpoints/vgg_bn"
 checkpoint="${checkdir}/gen_01000000.pt"
-config="configs/unit_day2night_vgg.yaml"
-indir="/mnt/w/prj/GraduateWork/scripts/Any2Gif/img/day_orig"
-outdir="${checkdir}/out"
-mkdir -p $outdir
+config="configs/unit_day2night_vgg_bn.yaml"
+indir="/mnt/w/prj/GraduateWork/scripts/Any2Gif/img/night_orig"
+outdir="${checkdir}/out_b2a"
 # ----------------------------------------------------------
+cd /mnt/w/prj/UNIT
+mkdir -p $outdir
 
 echo "------------------------------------------------------"
 echo "UNIT | day2night | starting..."
 echo "------------------------------------------------------"
 set -e
 sleep 1
-cd /mnt/w/prj/UNIT
 echo "------------------------------------------------------"
 echo " Show all GPUs"
 echo "------------------------------------------------------"
@@ -28,7 +28,7 @@ if [ "$c" == "y" ]; then
 else
     B="Day"
     A="Night"
-    d2n=2
+    d2n=0
 fi
 
 echo "------------------------------------------------------"
@@ -50,5 +50,5 @@ fi
 echo "Launch testing script..."
 sleep 2
 
-python test_batch.py --device $gpu --config $config --input_folder $indir --output_folder $outdir --checkpoint $checkpoint --a2b $d2n --trainer UNIT --output_only
+python test_batch.py --device $gpu --config $config --input_folder $indir --output_folder $outdir --output_only --checkpoint $checkpoint --a2b $d2n --trainer UNIT
 echo " Completed! "

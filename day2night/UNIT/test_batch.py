@@ -96,7 +96,7 @@ with torch.no_grad():
         print('Start testing')
         style_fixed = Variable(torch.randn(opts.num_style, style_dim, 1, 1).cuda(), volatile=True)
         for i, (images, names) in enumerate(zip(data_loader, image_names)):
-            print(names[1])
+            print(f"{names[1]} -> {opts.output_folder}")
             images = Variable(images.cuda(), volatile=True)
             content, _ = encode(images)
             style = style_fixed if opts.synchronized else Variable(torch.randn(opts.num_style, style_dim, 1, 1).cuda(), volatile=True)
@@ -118,7 +118,7 @@ with torch.no_grad():
 
         print('Start testing')
         for i, (images, names) in enumerate(zip(data_loader, image_names)):
-            print(names[1])
+            print(f"{names[1]} -> {opts.output_folder}")
             images = Variable(images.cuda(), volatile=True)
             content, _ = encode(images)
 
