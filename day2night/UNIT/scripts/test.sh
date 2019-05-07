@@ -1,9 +1,9 @@
 #!/bin/bash
 # ----------------------- parameters -----------------------
-checkdir="checkpoints/vgg"
-checkpoint="${checkdir}/gen_01000000.pt"
-config="configs/unit_day2night_vgg.yaml"
-indir="/mnt/w/prj/GraduateWork/scripts/Any2Gif/img/night_orig"
+checkdir="outputs/unit_day2night_512_vgg "
+checkpoint="${checkdir}/gen_00482000.pt"
+config="configs/unit_day2night_512_vgg.yaml"
+indir="/mnt/w/prj/data/nexet/nexet_2017_1/testA"
 outdir="${checkdir}/out"
 # ----------------------------------------------------------
 cd /mnt/w/prj/UNIT
