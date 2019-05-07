@@ -210,6 +210,22 @@ class ImageDiff:
         self._setup_plt(imageA, imageB, m, s, title, msg)
         plt.show()
 
+    def get_splitted(self, image, parts=2, direction='h', to_rgb=True):
+        if direction == 'h':
+            w = image.shape[1]
+            part = w // parts
+            offset = part
+            images = [image[:, offset*k:offset*k + part, ...] for k in range(parts)]
+        elif direction == 'v':
+            h = image.shape[0]
+            part = h // parts
+            offset = part
+            images = [image[offset*k:offset*k + part, :, ...] for k in range(parts)]
+
+        if to_rgb:
+            images = self._rgb(*images)
+        return images
+
     def get_concated(self, *images, to_rgb=True):
         n = len(images)
         if n < 2:
@@ -265,11 +281,16 @@ class ImageDiff:
 if __name__ == "__main__":
     imageA = "img/1/Image00001.jpg"
     imageB = "img/2/Image00001.jpg"
-    
+    image = "img/concat/image0000001.png"
+
     imdiff = ImageDiff(grayscale=False)
-    imageA = imdiff.add_image(imageA)
-    imageB = imdiff.add_image(imageB)
-    imdiff.compare_all(interactive=True)
-    imdiff.print_stats()
-    imdiff.save_stats()
-    imdiff.save_stats(save_format='csv')
+    # imageA = imdiff.add_image(imageA)
+    # imageB = imdiff.add_image(imageB)
+    image = imdiff.add_image(image)
+    a = imdiff.get_splitted(image, parts=4)
+    for i in a:
+        imdiff.show_image(i, wait=True)
+    # imdiff.compare_all(interactive=True)
+    # imdiff.print_stats()
+    # imdiff.save_stats()
+    # imdiff.save_stats(save_format='csv')
