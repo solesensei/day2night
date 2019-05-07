@@ -67,7 +67,7 @@ else:
     else:
         new_size = config['new_size_b']
 image_names = ImageFolder(opts.input_folder, transform=None, return_paths=True)
-data_loader = get_data_loader_folder(opts.input_folder, 1, False, new_size=new_size, crop=False)
+data_loader = get_data_loader_folder(opts.input_folder, 1, False, new_size=new_size, crop=False, num_workers=config['num_workers'])
 
 config['vgg_model_path'] = opts.output_path
 config['resnet_model_path'] = opts.output_path
