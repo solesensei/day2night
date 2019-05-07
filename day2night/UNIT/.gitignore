@@ -3,6 +3,7 @@ datasets/
 models/
 data/
 logs/
+checkpoints/
 .idea/
 dgx/scripts/
 .ipynb_checkpoints/

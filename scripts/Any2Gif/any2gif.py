@@ -83,8 +83,8 @@ def vid2gif(video_path, gif_path, fps=-1, duration=-1):
 
 
 def img2gif(images_dir, gif_path, fps=2, duration=-1):
-    if not os.path.exists(images_dir):
-        print(f'No {images_dir} path found')
+    if not os.path.isdir(images_dir):
+        print(f'No {images_dir} folder found')
         return
 
     images = []

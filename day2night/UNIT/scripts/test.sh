@@ -1,3 +1,13 @@
+#!/bin/bash
+# ----------------------- parameters -----------------------
+checkdir="checkpoints/vgg"
+checkpoint="${checkdir}/gen_01000000.pt"
+config="configs/unit_day2night_vgg.yaml"
+indir="/mnt/w/prj/GraduateWork/scripts/Any2Gif/img/day_orig"
+outdir="${checkdir}/out"
+mkdir -p $outdir
+# ----------------------------------------------------------
+
 echo "------------------------------------------------------"
 echo "UNIT | day2night | starting..."
 echo "------------------------------------------------------"
@@ -10,40 +20,8 @@ echo "------------------------------------------------------"
 nvidia-smi --format=csv --query-gpu=index,name,driver_version,memory.total,memory.used,memory.free
 echo "------------------------------------------------------"
 read -p "Choose number of free GPU for training: [0,1,2...] " gpu
-read -p "Use VGG pre-trained model? [y/n] " vgg
-if [ "$vgg" == "y" ]; then
-    vgg="YES"
-    config="configs/unit_day2night_512_vgg.yaml"
-else
-    vgg="NO"
-    config="configs/unit_day2night_512.yaml"
-fi
-read -p "Config: $config correct? [y/n] (You can choose manualy if not) " c
-if [ "$c" == "n" ]; then
-    read -p "Set path to config: " config
-fi
-
-read -p "Input folder: $PWD/inputs [y/n] " indir
-if [ "$indir" == "y" ]; then
-    indir="$PWD/inputs"
-else
-    read -p "Set path to input folder: " indir
-fi
-
-checkpoint="$PWD/checkpoints/gen_00420000.pt"
-read -p "Checkpoint: $checkpoint [y/n] " c
-if [ "$c" == "n" ]; then
-    read -p "Set path to checkpoint: " checkpoint
-fi
-
-read -p "Output folder: $PWD/outputs [y/n] " outdir
-if [ "$outdir" == "y" ]; then
-    outdir="$PWD/outputs"
-else
-    read -p "Set path to output folder: " outdir
-fi
 read -p "Domains: Day -> Night [y/n] " c
-if [ "$outdir" == "y" ]; then
+if [ "$c" == "y" ]; then
     A="Day"
     B="Night"
     d2n=1
@@ -71,5 +49,6 @@ if [ "$ok" == "n" ]; then
 fi
 echo "Launch testing script..."
 sleep 2
-python test_batch.py --device $gpu --config $config --input_folder $indir --output_folder $outdir --checkpoint $checkpoint --a2b $d2n --trainer UNIT
+
+python test_batch.py --device $gpu --config $config --input_folder $indir --output_folder $outdir --checkpoint $checkpoint --a2b $d2n --trainer UNIT --output_only
 echo " Completed! "

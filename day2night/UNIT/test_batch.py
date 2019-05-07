@@ -90,48 +90,49 @@ trainer.eval()
 encode = trainer.gen_a.encode if opts.a2b else trainer.gen_b.encode # encode function
 decode = trainer.gen_b.decode if opts.a2b else trainer.gen_a.decode # decode function
 
-if opts.trainer == 'MUNIT':
+with torch.no_grad():
+    if opts.trainer == 'MUNIT':
 
-    print('Start testing')
-    style_fixed = Variable(torch.randn(opts.num_style, style_dim, 1, 1).cuda(), volatile=True)
-    for i, (images, names) in enumerate(zip(data_loader, image_names)):
-        print(names[1])
-        images = Variable(images.cuda(), volatile=True)
-        content, _ = encode(images)
-        style = style_fixed if opts.synchronized else Variable(torch.randn(opts.num_style, style_dim, 1, 1).cuda(), volatile=True)
-        for j in range(opts.num_style):
-            s = style[j].unsqueeze(0)
-            outputs = decode(content, s)
+        print('Start testing')
+        style_fixed = Variable(torch.randn(opts.num_style, style_dim, 1, 1).cuda(), volatile=True)
+        for i, (images, names) in enumerate(zip(data_loader, image_names)):
+            print(names[1])
+            images = Variable(images.cuda(), volatile=True)
+            content, _ = encode(images)
+            style = style_fixed if opts.synchronized else Variable(torch.randn(opts.num_style, style_dim, 1, 1).cuda(), volatile=True)
+            for j in range(opts.num_style):
+                s = style[j].unsqueeze(0)
+                outputs = decode(content, s)
+                outputs = (outputs + 1) / 2.
+                # path = os.path.join(opts.output_folder, 'input{:03d}_output{:03d}.jpg'.format(i, j))
+                basename = os.path.basename(names[1])
+                path = os.path.join(opts.output_folder+"_%02d"%j,basename)
+                if not os.path.exists(os.path.dirname(path)):
+                    os.makedirs(os.path.dirname(path))
+                vutils.save_image(outputs.data, path, padding=0, normalize=True)
+            if not opts.output_only:
+                # also save input images
+                vutils.save_image(images.data, os.path.join(opts.output_folder, 'input{:03d}.jpg'.format(i)), padding=0, normalize=True)
+        print('Start testing')
+    elif opts.trainer == 'UNIT':
+
+        print('Start testing')
+        for i, (images, names) in enumerate(zip(data_loader, image_names)):
+            print(names[1])
+            images = Variable(images.cuda(), volatile=True)
+            content, _ = encode(images)
+
+            outputs = decode(content)
             outputs = (outputs + 1) / 2.
             # path = os.path.join(opts.output_folder, 'input{:03d}_output{:03d}.jpg'.format(i, j))
             basename = os.path.basename(names[1])
-            path = os.path.join(opts.output_folder+"_%02d"%j,basename)
+            path = os.path.join(opts.output_folder,basename)
             if not os.path.exists(os.path.dirname(path)):
                 os.makedirs(os.path.dirname(path))
             vutils.save_image(outputs.data, path, padding=0, normalize=True)
-        if not opts.output_only:
-            # also save input images
-            vutils.save_image(images.data, os.path.join(opts.output_folder, 'input{:03d}.jpg'.format(i)), padding=0, normalize=True)
-    print('Start testing')
-elif opts.trainer == 'UNIT':
-
-    print('Start testing')
-    for i, (images, names) in enumerate(zip(data_loader, image_names)):
-        print(names[1])
-        images = Variable(images.cuda(), volatile=True)
-        content, _ = encode(images)
-
-        outputs = decode(content)
-        outputs = (outputs + 1) / 2.
-        # path = os.path.join(opts.output_folder, 'input{:03d}_output{:03d}.jpg'.format(i, j))
-        basename = os.path.basename(names[1])
-        path = os.path.join(opts.output_folder,basename)
-        if not os.path.exists(os.path.dirname(path)):
-            os.makedirs(os.path.dirname(path))
-        vutils.save_image(outputs.data, path, padding=0, normalize=True)
-        if not opts.output_only:
-            # also save input images
-            vutils.save_image(images.data, os.path.join(opts.output_folder, 'input{:03d}.jpg'.format(i)), padding=0, normalize=True)
-    print('Start testing')
-else:
-    pass
+            if not opts.output_only:
+                # also save input images
+                vutils.save_image(images.data, os.path.join(opts.output_folder, 'input{:03d}.jpg'.format(i)), padding=0, normalize=True)
+        print('Testing Complete')
+    else:
+        pass
