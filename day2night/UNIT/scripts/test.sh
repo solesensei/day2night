@@ -1,6 +1,6 @@
 #!/bin/bash
 # ----------------------- parameters -----------------------
-checkdir="outputs/unit_day2night_512_vgg "
+checkdir="outputs/unit_day2night_512_vgg"
 checkpoint="${checkdir}/gen_00482000.pt"
 config="configs/unit_day2night_512_vgg.yaml"
 indir="/mnt/w/prj/data/nexet/nexet_2017_1/testA"
