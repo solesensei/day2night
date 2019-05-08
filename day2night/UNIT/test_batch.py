@@ -14,6 +14,7 @@ try:
     from itertools import izip as zip
 except ImportError: # will be 3.x series
     pass
+from time import time
 import sys
 import torch
 import os
@@ -94,6 +95,7 @@ encode = trainer.gen_a.encode if opts.a2b else trainer.gen_b.encode # encode fun
 decode = trainer.gen_b.decode if opts.a2b else trainer.gen_a.decode # decode function
 
 with torch.no_grad():
+    t_start = time() 
     if opts.trainer == 'MUNIT':
 
         print('Start testing')
@@ -139,3 +141,5 @@ with torch.no_grad():
         print('Testing Complete')
     else:
         pass
+    t_fin = time() - t_start
+    print(f'Time: {t_fin//60}m {t_fin%60}s')
