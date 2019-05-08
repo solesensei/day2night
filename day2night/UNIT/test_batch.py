@@ -128,19 +128,19 @@ with torch.no_grad():
         print('Start testing')
         for i, (images, names) in enumerate(zip(data_loader, image_names)):
             bar = f"{names[1]}"
-            print(f'{bar} --> encoding', end='\r')
+            print(f'{bar} --> encoding', ' '*20, end='\r')
             images = Variable(images.cuda(), volatile=True)
             code, _ = encode(images)
             if opts.recon:
-                print(f'{bar} --> reconstructing', end='\r')
+                print(f'{bar} --> reconstructing', ' '*20, end='\r')
                 reconstructed = decode_r(code)
                 reconstructed = (reconstructed + 1) / 2.
 
-            print(f'{bar} --> translating', end='\r')
+            print(f'{bar} --> translating', ' '*20, end='\r')
             outputs = decode(code)
             outputs = (outputs + 1) / 2.
 
-            print(f'{bar} --> saving', end='\r')
+            print(f'{bar} --> saving', ' '*20, end='\r')
             basename = os.path.basename(names[1])
             path = os.path.join(opts.output_folder,basename)
             path_dir = os.path.dirname(path)
@@ -155,8 +155,7 @@ with torch.no_grad():
                 if not os.path.exists(os.path.join(path_dir, 'recon/')):
                     os.makedirs(os.path.join(path_dir, 'recon/'))
                 vutils.save_image(reconstructed.data, os.path.join(opts.output_folder, 'recon/', basename), padding=0, normalize=True)
-            bar += 'saved  --> ok!'
-            print(f'{bar} --> {opts.output_folder}', end='\r')
+            print(f'{bar} --> {opts.output_folder}', ' '*20)
                 
         print('Testing Complete')
     else:
