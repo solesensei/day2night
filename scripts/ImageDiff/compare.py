@@ -187,6 +187,12 @@ class ImageDiff:
                 self.add_image(path)
         return self.images
 
+    def clean(self, full=False):
+        if full:
+            self.images = {}
+        for k, v in self.images:
+            v['images'] = []
+
     def _setup_plt(self, imageA, imageB, m, s, title, msg):
         fig = plt.figure(title)
         plt.suptitle(f"MSE: {m:.2f}, SSIM: {s:.6}", fontsize=15)
