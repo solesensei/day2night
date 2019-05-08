@@ -3,8 +3,8 @@
 checkdir="checkpoints/vgg"
 checkpoint="${checkdir}/gen_01000000.pt"
 config="configs/unit_day2night_vgg.yaml"
-indir="${checkdir}/out_b2a/input"
-outdir="${checkdir}/out_b2b"
+indir="test/"
+outdir="test/vgg/512"
 # ----------------------------------------------------------
 # cd /mnt/w/prj/UNIT
 mkdir -p $outdir

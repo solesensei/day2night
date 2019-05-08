@@ -3,6 +3,7 @@ datasets/
 models/
 data/
 logs/
+test/
 checkpoints/
 .idea/
 dgx/scripts/
