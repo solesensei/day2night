@@ -1,12 +1,12 @@
 import os
 import json
 import cv2
+import math
 import numpy as np
 from time import sleep
 import matplotlib.pyplot as plt
 from skimage.measure import compare_ssim as ssim
 from imutils import grab_contours
-
 
 class ImageDiff:
     def __init__(self, grayscale=True):
@@ -19,13 +19,10 @@ class ImageDiff:
         The 'Mean Squared Error' between the two images is the
         sum of the squared difference between the two images
         ```
-        NOTE: the two images must have the same dimension
         return the MSE, the lower the error, the more "similar" images are
         ```
         """
-        if imageA.shape != imageB.shape:
-            print("MSE: the two images must have the same dimension")
-            return None
+        imageA, imageB = self._get_same_sized(imageA, imageB)
         err = np.sum((imageA.astype("float") - imageB.astype("float"))**2)
         err /= float(imageA.shape[0] * imageA.shape[1])
         return err
@@ -35,17 +32,46 @@ class ImageDiff:
         The 'Structural Similarity' between the two images is the perception-based
         index for measuring the similarity between two images.
         ```
-        return the SSIM: tuple (score, diff) if full or just score,
+        return the SSIM: tuple(score, diff) if full or just score,
         the higher is better
         ```
         """
+        imageA, imageB = self._get_same_sized(imageA, imageB)
         S = ssim(imageA, imageB, multichannel=(not self.grayscale), full=full)
         if isinstance(S, tuple):
             sdiff = (S[1] * 255).astype("uint8")
             return S[0], sdiff
         return S
 
+    def psnr(self, imageA, imageB):
+        """
+        The 'Peak Signal-to-Noise Ratio' between the two images is the 20log10(255/sqrt(MSE))
+        ```
+        return the PSNR in decibels, 30-50 dB - typical for compression
+        ```
+        """
+        mse = self.mse(imageA, imageB)
+        if mse:
+            return 20 * math.log10(255.0 / math.sqrt(mse))
+        return 100
+
+    def _get_same_sized(self, imageA, imageB):
+        if len(imageA) != len(imageB):
+            print('Images dimensions differ, converting to 2 dim', imageA.shape, '!=', imageB.shape)
+            if len(imageA) == 3:
+                imageA = cv2.cvtColor(imageA, cv2.COLOR_BGR2GRAY)
+            if len(imageB) == 3:
+                imageB = cv2.cvtColor(imageB, cv2.COLOR_BGR2GRAY)
+        if imageA.shape[0] != imageB.shape[0] or imageA.shape[1] != imageB.shape[1]:
+            print('Images size are diffeerent:', imageA.shape, '!=', imageB.shape)
+            h,w = min(imageA.shape[0], imageB.shape[0]), min(imageA.shape[1], imageB.shape[1])
+            print('Get cropped:', h, w)
+            imageA = imageA[:h,:w,...].copy()
+            imageB = imageB[:h,:w,...].copy()
+        return imageA, imageB
+
     def get_diff(self, imageA, imageB):
+        imageA, imageB = self._get_same_sized(imageA, imageB)
         return cv2.subtract(imageA, imageB)
 
     def get_threshold(self, imageA, imageB, rgb=False):
@@ -70,9 +96,11 @@ class ImageDiff:
             cv2.rectangle(imageB, (x, y), (x + w, y + h), (0, 0, 255), 1)
 
     def get_absdiff(self, imageA, imageB):
+        imageA, imageB = self._get_same_sized(imageA, imageB)
         return cv2.absdiff(imageA, imageB)
 
     def is_equal(self, imageA, imageB):
+        imageA, imageB = self._get_same_sized(imageA, imageB)
         diff = cv2.subtract(imageA, imageB)
         return not np.any(diff)
 
@@ -138,6 +166,7 @@ class ImageDiff:
         self.images[name] = self.images.get(name, {})
         self.images[name]['MSE'] = ""
         self.images[name]['SSIM'] = ""
+        self.images[name]['msg'] = ""
         self.images[name]['images'] = self.images[name].get('images', [])
         self.images[name]['images'].append(image)
         return image
@@ -256,11 +285,6 @@ class ImageDiff:
     def save_image(self, image, filename='image.png'):
         cv2.imwrite(filename, image)
 
-    def save_diff_images(self, imageA, imageB, name='image.png', sides=False, absolute=False):
-        diff = self.get_diff(imageA, imageB)
-        if self.is_equal(imageA, imageB):
-            pass
-
     def save_stats(self, filename='stats', save_format='json'):
         filename = os.path.splitext(os.path.basename(filename))[0]
         if save_format == 'json':
@@ -286,10 +310,15 @@ if __name__ == "__main__":
     imdiff = ImageDiff(grayscale=False)
     # imageA = imdiff.add_image(imageA)
     # imageB = imdiff.add_image(imageB)
-    image = imdiff.add_image(image)
-    a = imdiff.get_splitted(image, parts=4)
-    for i in a:
-        imdiff.show_image(i, wait=True)
+    imageA = imdiff.add_image(imageA)
+    imageA = cv2.cvtColor(imageA, cv2.COLOR_BGR2GRAY)
+    imageA = cv2.cvtColor(imageA, cv2.COLOR_BGR2GRAY)
+    print(imageA.shape)
+
+
+    # a = imdiff.get_splitted(image, parts=4)
+    # for i in a:
+        # imdiff.show_image(i, wait=True)
     # imdiff.compare_all(interactive=True)
     # imdiff.print_stats()
     # imdiff.save_stats()

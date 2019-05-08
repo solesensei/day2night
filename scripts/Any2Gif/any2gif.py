@@ -8,7 +8,6 @@ sys.path.append(os.path.abspath(".."))
 from ImageDiff.compare import ImageDiff
 from PIL import Image
 
-
 def vid2img(video_path, images_dir, fps=-1, duration=-1):
     if not os.path.exists(images_dir):
         print(f'No {images_dir} path found')
