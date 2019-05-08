@@ -3,8 +3,8 @@
 checkdir="checkpoints/vgg"
 checkpoint="${checkdir}/gen_01000000.pt"
 config="configs/unit_day2night_vgg.yaml"
-indir="test/"
-outdir="test/vgg/512"
+indir="/mnt/w/prj/Graduate/scripts/Any2Gif/img/day_orig"
+outdir="${checkdir}/vgg"
 # ----------------------------------------------------------
 # cd /mnt/w/prj/UNIT
 mkdir -p $outdir
@@ -50,5 +50,5 @@ fi
 echo "Launch testing script..."
 sleep 2
 
-python test_batch.py --device $gpu --config $config --input_folder $indir --output_folder $outdir --checkpoint $checkpoint --a2b $d2n --trainer UNIT
+python test_batch.py --device $gpu --config $config --input_folder $indir --output_folder $outdir --checkpoint $checkpoint --a2b $d2n --trainer UNIT --recon
 echo " Completed! "
