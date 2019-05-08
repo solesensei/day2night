@@ -149,12 +149,17 @@ with torch.no_grad():
             print('saving --', end='\r')
             basename = os.path.basename(names[1])
             path = os.path.join(opts.output_folder,basename)
-            if not os.path.exists(os.path.dirname(path)):
-                os.makedirs(os.path.dirname(path))
+            path_dir = os.path.dirname(path)
+            if not os.path.exists(path_dir):
+                os.makedirs(path_dir)
             vutils.save_image(outputs.data, path, padding=0, normalize=True)
             if not opts.output_only:
-                vutils.save_image(images.data, os.path.join(opts.output_folder, 'input/', basename), padding=0, normalize=True)
+                if not os.path.exists(os.path.join(path_dir, 'input/')):
+                    os.makedirs(os.path.join(path_dir, 'input/'))
+                vutils.save_image(images.data, os.path.join(path_dir, 'input/', basename), padding=0, normalize=True)
             if opts.recon:
+                if not os.path.exists(os.path.join(path_dir, 'recon/')):
+                    os.makedirs(os.path.join(path_dir, 'recon/'))
                 vutils.save_image(reconstructed.data, os.path.join(opts.output_folder, 'recon/', basename), padding=0, normalize=True)
             bar += 'saved  --> ok!'
             print(bar, end='\r')
@@ -163,4 +168,4 @@ with torch.no_grad():
     else:
         pass
     t_fin = time() - t_start
-    print(f'Time: {t_fin//60}m {t_fin%60}s | {t_fin}s')
+    print(f'Time: {int(t_fin//60)}m {int(t_fin%60)}s | {int(t_fin)}s')
