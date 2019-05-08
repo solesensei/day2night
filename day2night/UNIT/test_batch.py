@@ -26,6 +26,7 @@ def usage():
     parser.add_argument('--output_folder', type=str, help="output image path", required=True)
     parser.add_argument('--checkpoint', type=str, help="checkpoint of autoencoders", required=True)
     parser.add_argument('--a2b', type=int, help="1 for a2b and others for b2a", default=1)
+    parser.add_argument('--recon', action='store_true', help="save reconstructions too")
     parser.add_argument('--seed', type=int, default=1, help="random seed")
     parser.add_argument('--num_style',type=int, default=10, help="number of styles to sample")
     parser.add_argument('--synchronized', action='store_true', help="whether use synchronized style code or not")
@@ -91,8 +92,11 @@ except:
 
 trainer.cuda()
 trainer.eval()
+
 encode = trainer.gen_a.encode if opts.a2b else trainer.gen_b.encode # encode function
 decode = trainer.gen_b.decode if opts.a2b else trainer.gen_a.decode # decode function
+if opts.recon:
+    decode_r = trainer.gen_b.decode if not opts.a2b else trainer.gen_a.decode # decode for reconstruction function
 
 with torch.no_grad():
     t_start = time() 
@@ -103,11 +107,11 @@ with torch.no_grad():
         for i, (images, names) in enumerate(zip(data_loader, image_names)):
             print(f"{names[1]} -> {opts.output_folder}")
             images = Variable(images.cuda(), volatile=True)
-            content, _ = encode(images)
+            code, _ = encode(images)
             style = style_fixed if opts.synchronized else Variable(torch.randn(opts.num_style, style_dim, 1, 1).cuda(), volatile=True)
             for j in range(opts.num_style):
                 s = style[j].unsqueeze(0)
-                outputs = decode(content, s)
+                outputs = decode(code, s)
                 outputs = (outputs + 1) / 2.
                 # path = os.path.join(opts.output_folder, 'input{:03d}_output{:03d}.jpg'.format(i, j))
                 basename = os.path.basename(names[1])
@@ -125,21 +129,38 @@ with torch.no_grad():
         for i, (images, names) in enumerate(zip(data_loader, image_names)):
             print(f"{names[1]} -> {opts.output_folder}")
             images = Variable(images.cuda(), volatile=True)
-            content, _ = encode(images)
+            print('encoding --', end='\r')
+            code, _ = encode(images)
+            bar = 'encoded  --> '
+            print(bar, end='')
+            if opts.recon:
+                print('reconstructing --', end='\r')
+                reconstructed = decode_r(code)
+                reconstructed = (reconstructed + 1) / 2.
+                bar += 'reconstructed  --> '
+                print(bar, end='')
 
-            outputs = decode(content)
+            print('translating --', end='\r')
+            outputs = decode(code)
             outputs = (outputs + 1) / 2.
-            # path = os.path.join(opts.output_folder, 'input{:03d}_output{:03d}.jpg'.format(i, j))
+            bar += 'translated  --> '
+            print(bar, end='')
+
+            print('saving --', end='\r')
             basename = os.path.basename(names[1])
             path = os.path.join(opts.output_folder,basename)
             if not os.path.exists(os.path.dirname(path)):
                 os.makedirs(os.path.dirname(path))
             vutils.save_image(outputs.data, path, padding=0, normalize=True)
             if not opts.output_only:
-                # also save input images
                 vutils.save_image(images.data, os.path.join(opts.output_folder, 'input/', basename), padding=0, normalize=True)
+            if opts.recon:
+                vutils.save_image(reconstructed.data, os.path.join(opts.output_folder, 'recon/', basename), padding=0, normalize=True)
+            bar += 'saved  --> ok!'
+            print(bar, end='\r')
+                
         print('Testing Complete')
     else:
         pass
     t_fin = time() - t_start
-    print(f'Time: {t_fin//60}m {t_fin%60}s')
+    print(f'Time: {t_fin//60}m {t_fin%60}s | {t_fin}s')
