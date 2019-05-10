@@ -27,6 +27,7 @@ def usage():
     parser.add_argument('--checkpoint', type=str, help="checkpoint of autoencoders", required=True)
     parser.add_argument('--a2b', type=int, help="1 for a2b and others for b2a", default=1)
     parser.add_argument('--recon', action='store_true', help="save reconstructions too")
+    parser.add_argument('--number', type=int, default=-1, help="Number of image to process, default: all")
     parser.add_argument('--seed', type=int, default=1, help="random seed")
     parser.add_argument('--num_style',type=int, default=10, help="number of styles to sample")
     parser.add_argument('--synchronized', action='store_true', help="whether use synchronized style code or not")
@@ -127,6 +128,8 @@ with torch.no_grad():
 
         print('Start testing')
         for i, (images, names) in enumerate(zip(data_loader, image_names)):
+            if opts.number != -1 and i >= opts.number:
+                break
             bar = f"{names[1]}"
             print(f'{bar} --> encoding', ' '*20, end='\r')
             images = Variable(images.cuda(), volatile=True)

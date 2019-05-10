@@ -288,7 +288,9 @@ class ImageDiff:
         if wait:
             cv2.waitKey(0)
 
-    def save_image(self, image, filename='image.png'):
+    def save_image(self, image, filename='image.png', rgb=False):
+        if rgb:
+            image = cv2.cvtColor(image, cv2.COLOR_BGR2RGB)
         cv2.imwrite(filename, image)
 
     def save_stats(self, filename='stats', save_format='json'):

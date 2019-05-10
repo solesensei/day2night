@@ -186,11 +186,12 @@ if __name__ == "__main__":
     night_dir = f'{data_dir}/FRAMESA/'
     day_vid = f'{data_dir}/day1_orig.avi'
     night_vid = f'{data_dir}/night1_orig.avi'
+    check_dir = '/mnt/w/prj/GraduateWork/day2night/UNIT/checkpoints'
 
-    img2img('/mnt/w/prj/GraduateWork/day2night/UNIT/checkpoints/vgg/out/input', '/mnt/w/prj/GraduateWork/day2night/UNIT/checkpoints/vgg/out_b2a/input', concat=True, concat_dir='/mnt/w/prj/GraduateWork/day2night/UNIT/checkpoints/vgg/out/concat_orig')
-    img2img('/mnt/w/prj/GraduateWork/day2night/UNIT/checkpoints/vgg/out/concat_orig', '/mnt/w/prj/GraduateWork/day2night/UNIT/checkpoints/vgg/out', resize=1.5, concat=True, concat_dir='/mnt/w/prj/GraduateWork/day2night/UNIT/checkpoints/vgg/out/concat_3')
+    img2img(f'{check_dir}/unit/out', f'{check_dir}/unit_no_err/out', concat=True, concat_dir=f'{check_dir}/unit_no_err/concat2')
+    img2img(f'{check_dir}/unit/out/input', f'{check_dir}/unit_no_err/concat2', concat=True, concat_dir=f'{check_dir}/unit/concat3')
     # vid2img(night_vid, 'img/night_orig', fps=5, duration=20)
     # vid2img(day_vid, 'img/day_orig', fps=5, duration=20)
     # img2gif('img/day_orig', 'gif/day_orig.gif', fps=5)
     # img2gif('img/night_orig', 'gif/night_orig.gif', fps=5)
-    img2gif('/mnt/w/prj/GraduateWork/day2night/UNIT/checkpoints/vgg/out/concat_3', '/mnt/w/prj/GraduateWork/day2night/UNIT/checkpoints/vgg/out/concat_3/concat_3.gif', fps=8)
+    # img2gif('/mnt/w/prj/GraduateWork/day2night/UNIT/checkpoints/vgg/out/concat_3', '/mnt/w/prj/GraduateWork/day2night/UNIT/checkpoints/vgg/out/concat_3/concat_3.gif', fps=8)

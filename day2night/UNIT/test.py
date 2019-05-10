@@ -107,17 +107,17 @@ with torch.no_grad():
             s = style[j].unsqueeze(0)
             outputs = decode(content, s)
             outputs = (outputs + 1) / 2.
-            path = os.path.join(opts.output_folder, 'output{:03d}.jpg'.format(j))
+            path = os.path.join(opts.output_folder, 'output{:03d}.png'.format(j))
             vutils.save_image(outputs.data, path, padding=0, normalize=True)
     elif opts.trainer == 'UNIT':
         outputs = decode(content)
         outputs = (outputs + 1) / 2.
-        path = os.path.join(opts.output_folder, 'output.jpg')
+        path = os.path.join(opts.output_folder, 'output.png')
         vutils.save_image(outputs.data, path, padding=0, normalize=True)
     else:
         pass
 
     if not opts.output_only:
         # also save input images
-        vutils.save_image(image.data, os.path.join(opts.output_folder, 'input.jpg'), padding=0, normalize=True)
+        vutils.save_image(image.data, os.path.join(opts.output_folder, 'input.png'), padding=0, normalize=True)
 print('Testing complete!') 
