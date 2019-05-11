@@ -1,12 +1,14 @@
 import os
 import json
 import cv2
+import PIL
 import math
 import numpy as np
 from time import sleep
 import matplotlib.pyplot as plt
 from skimage.measure import compare_ssim as ssim
 from imutils import grab_contours
+
 
 class ImageDiff:
     def __init__(self, grayscale=True):
@@ -265,6 +267,16 @@ class ImageDiff:
         else:
             plt.imshow(imageB)
         plt.axis("off")
+
+    def _to_pil(self, cv_image):
+        if isinstance(cv_image, np.ndarray):
+            return PIL.Image.fromarray(cv_image)
+        return cv_image
+
+    def _to_cv(self, pil_image):
+        if isinstance(pil_image, np.ndarray):
+            return pil_image
+        return np.array(pil_image)
 
     def _rgb(self, *images, globaly=False):
         if len(images) == 1:
