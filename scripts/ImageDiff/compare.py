@@ -42,7 +42,7 @@ class ImageDiff:
         if isinstance(S, tuple):
             sdiff = (S[1] * 255).astype("uint8")
             return S[0], sdiff
-        if len(S) == 2:
+        if not isinstance(S, np.float64):
             return S
         return S, None        
 
@@ -66,9 +66,8 @@ class ImageDiff:
             if len(imageB) == 3:
                 imageB = cv2.cvtColor(imageB, cv2.COLOR_BGR2GRAY)
         if imageA.shape[0] != imageB.shape[0] or imageA.shape[1] != imageB.shape[1]:
-            print('Images size are diffeerent:', imageA.shape, '!=', imageB.shape)
             h,w = min(imageA.shape[0], imageB.shape[0]), min(imageA.shape[1], imageB.shape[1])
-            print('Get cropped:', h, w)
+            print(f'Images size are diffeerent: {imageA.shape} != {imageB.shape} | Crop: ({h},{w})')
             imageA = imageA[:h,:w,...].copy()
             imageB = imageB[:h,:w,...].copy()
         return imageA, imageB
@@ -134,7 +133,9 @@ class ImageDiff:
     def compare_all(self, interactive=False):
         for name, values in self.images.items():
             images = values.get('images', [])
-            if len(images) < 2:
+            if not images:
+                continue
+            if len(images) == 1:
                 print(f'Image {name} has no pair to compare')
             else:
                 m, p, s, msg = self.compare_images(images[0], images[1], title=name, interactive=interactive)
@@ -198,12 +199,12 @@ class ImageDiff:
                     break
             else:
                 im_src.append(path)
-        im_src.sort()
+        im_src.sort(key=lambda x: os.path.splitext(os.path.basename(x))[0])
         return im_src
 
     def _loader(self, *pathes, number, batch, suffix):
-        if batch == 1:
-            batch = 2
+        if batch % 2 != 0:
+            batch += 1
         im_src = self._get_list_of_images(*pathes, number=number, suffix=suffix)
         images = []
         for src in im_src:
@@ -214,7 +215,7 @@ class ImageDiff:
             im = self.add_image(src, suffix=suffix)
             images.append(im)
         yield images
-        return
+        self.clean()
 
     def load_images(self, *pathes, number=0, batch=0, suffix=''):
 
