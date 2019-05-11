@@ -13,6 +13,7 @@ class ImageDiff:
         self.images = {}
         self.grayscale = grayscale
         self.color = 'BGR'
+        self.loader = False
 
     def mse(self, imageA, imageB):
         """
@@ -41,7 +42,9 @@ class ImageDiff:
         if isinstance(S, tuple):
             sdiff = (S[1] * 255).astype("uint8")
             return S[0], sdiff
-        return S
+        if len(S) == 2:
+            return S
+        return S, None        
 
     def psnr(self, imageA, imageB):
         """
@@ -106,16 +109,16 @@ class ImageDiff:
 
     def compare_images(self, imageA, imageB, interactive=False, title='Compare'):
         m = self.mse(imageA, imageB)
-        s, sd = self.ssim(imageA, imageB, full=True)
+        p = self.psnr(imageA, imageB)
+        s, sd = self.ssim(imageA, imageB, full=interactive)
         is_equal = self.is_equal(imageA, imageB)
         if is_equal:
             msg = "The images are the same"
         else:
             msg = "The images are different"
 
-        print(f"Title: {title} MSE: {m:.2f}, SSIM: {s:.6}, msg: {msg}")
-
         if interactive:
+            print(f"Title: {title} MSE: {m:.2f}, SSIM: {s:.6}, msg: {msg}")
             d = self.get_diff(imageA, imageB)
             a = self.get_absdiff(imageA, imageB)
             t = self.get_threshold(imageA, imageB, rgb=(not self.grayscale))
@@ -126,7 +129,7 @@ class ImageDiff:
             self.show_image(c, title=f"{self.color}: in, out, diff, abs, ssim, thresh", wait=True)
             self.show_cmp_plot(imageA, imageB, m, s, title, msg)
 
-        return m, s, msg
+        return m, p, s, msg
 
     def compare_all(self, interactive=False):
         for name, values in self.images.items():
@@ -134,8 +137,9 @@ class ImageDiff:
             if len(images) < 2:
                 print(f'Image {name} has no pair to compare')
             else:
-                m, s, msg = self.compare_images(images[0], images[1], title=name, interactive=interactive)
+                m, p, s, msg = self.compare_images(images[0], images[1], title=name, interactive=interactive)
                 values['MSE'] = m
+                values['PSNR'] = p
                 values['SSIM'] = s
                 values['msg'] = msg
 
@@ -154,7 +158,7 @@ class ImageDiff:
         else:
             print(f'No {name} image found')
 
-    def add_image(self, path, name=None):
+    def add_image(self, path, suffix='', name=None):
         if not os.path.exists(path) and (path.endswith('.png') or path.endswith('.jpg')):
             raise FileNotFoundError(f'No {path} image found. Supported ext: [.jpg|.png ]')
 
@@ -162,26 +166,77 @@ class ImageDiff:
 
         if name is None:
             name = os.path.splitext(os.path.basename(path))[0]
+        if suffix:
+            name = name.replace(suffix, '')
 
         self.images[name] = self.images.get(name, {})
         self.images[name]['MSE'] = ""
+        self.images[name]['PSNR'] = ""
         self.images[name]['SSIM'] = ""
         self.images[name]['msg'] = ""
         self.images[name]['images'] = self.images[name].get('images', [])
         self.images[name]['images'].append(image)
         return image
 
-    def load_images(self, *pathes):
+
+    def _get_list_of_images(self, *pathes, number, suffix):
+        im_src = []
         for path in pathes:
             if not os.path.exists(path):
                 raise FileExistsError(f'No {path} found')
 
             if os.path.isdir(path):
                 for r, _, f in os.walk(path):
-                    for file in f:
+                    for i, file in enumerate(sorted(f)):
+                        if number and i >= number:
+                            break
                         if file.endswith('.png') or file.endswith('.jpg'):
-                            src = os.path.join(r, file)
-                            self.add_image(src)
+                            name = os.path.splitext(os.path.basename(path))[0]
+                            if name.endswith(suffix):
+                                src = os.path.join(r, file)
+                                im_src.append(src)
+                    break
+            else:
+                im_src.append(path)
+        im_src.sort()
+        return im_src
+
+    def _loader(self, *pathes, number, batch, suffix):
+        if not self.loader:
+            self.loader = True
+            if batch == 1:
+                batch = 2
+            im_src = self._get_list_of_images(*pathes, number=number, suffix=suffix)
+        images = []
+        for src in im_src:
+            if len(images) >= batch:
+                yield images
+                self.clean()
+                images = []
+            im = self.add_image(src, suffix=suffix)
+            images.append(im)
+        yield images
+        return
+
+    def load_images(self, *pathes, number=0, batch=0, suffix=''):
+
+        if batch:
+            return self._loader(*pathes, number=number, batch=batch, suffix=suffix)
+
+        for path in pathes:
+            if not os.path.exists(path):
+                raise FileExistsError(f'No {path} found')
+
+            if os.path.isdir(path):
+                for r, _, f in os.walk(path):
+                    for i, file in enumerate(sorted(f)):
+                        if number and i >= number:
+                            break
+                        if file.endswith('.png') or file.endswith('.jpg'):
+                            name = os.path.splitext(os.path.basename(path))[0]
+                            if name.endswith(suffix):
+                                src = os.path.join(r, file)
+                                self.add_image(src, suffix=suffix)
                     break
             else:
                 self.add_image(path)
@@ -232,9 +287,10 @@ class ImageDiff:
         j = {}
         for image, values in self.images.items():
             j[image] = {}
-            j[image]['MSE'] = values['MSE']
-            j[image]['SSIM'] = values['SSIM']
-            j[image]['msg'] = values['msg']
+            j[image]['MSE'] = values.get('MSE', '')
+            j[image]['PSNR'] = values.get('PSNR', '')
+            j[image]['SSIM'] = values.get('SSIM', '')
+            j[image]['msg'] = values.get('msg', '')
         return j
 
     def print_stats(self):
@@ -302,10 +358,10 @@ class ImageDiff:
         elif save_format == 'csv':
             j = self.get_json_stats()
             with open(f'{filename}.csv', 'w') as stats:
-                print('image_name,MSE,SSIM,Message', file=stats)
+                print('image_name,MSE,PSNR,SSIM,Message', file=stats)
                 for image, v in j.items():
-                    m, s, msg = v['MSE'], v['SSIM'], v['msg']
-                    print(f'{image},{m},{s},{msg}', file=stats)
+                    m, p, s, msg = v.get('MSE', ''), v.get('PSNR', ''), v.get('SSIM', ''), v.get('msg', '')
+                    print(f'{image},{m},{p},{s},{msg}', file=stats)
         else:
             print(f'Error: Save format {save_format} not supported')
 
