@@ -202,11 +202,9 @@ class ImageDiff:
         return im_src
 
     def _loader(self, *pathes, number, batch, suffix):
-        if not self.loader:
-            self.loader = True
-            if batch == 1:
-                batch = 2
-            im_src = self._get_list_of_images(*pathes, number=number, suffix=suffix)
+        if batch == 1:
+            batch = 2
+        im_src = self._get_list_of_images(*pathes, number=number, suffix=suffix)
         images = []
         for src in im_src:
             if len(images) >= batch:
