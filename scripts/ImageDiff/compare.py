@@ -243,7 +243,7 @@ class ImageDiff:
     def clean(self, full=False):
         if full:
             self.images = {}
-        for k, v in self.images:
+        for k, v in self.images.items():
             v['images'] = []
 
     def _setup_plt(self, imageA, imageB, m, s, title, msg):
