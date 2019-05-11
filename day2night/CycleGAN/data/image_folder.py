@@ -1,8 +1,9 @@
-"""A modified image folder class
-
-We modify the official PyTorch image folder (https://github.com/pytorch/vision/blob/master/torchvision/datasets/folder.py)
-so that this class can load images from both current directory and its subdirectories.
-"""
+###############################################################################
+# Code from
+# https://github.com/pytorch/vision/blob/master/torchvision/datasets/folder.py
+# Modified the original code so that it also loads images from the current
+# directory as well as the subdirectories
+###############################################################################
 
 import torch.utils.data as data
 
@@ -20,7 +21,7 @@ def is_image_file(filename):
     return any(filename.endswith(extension) for extension in IMG_EXTENSIONS)
 
 
-def make_dataset(dir, max_dataset_size=float("inf")):
+def make_dataset(dir):
     images = []
     assert os.path.isdir(dir), '%s is not a valid directory' % dir
 
@@ -29,8 +30,23 @@ def make_dataset(dir, max_dataset_size=float("inf")):
             if is_image_file(fname):
                 path = os.path.join(root, fname)
                 images.append(path)
-    return images[:min(max_dataset_size, len(images))]
 
+    return images
+
+def load_labels(dir, images):
+    if os.path.exists(os.path.join(dir, 'labels.txt')):
+        with open(os.path.join(dir, 'labels.txt'), 'r') as f:
+            data = f.read().splitlines()
+        parse = np.array([(x.split(' ')[0], int(x.split(' ')[1])) for x in data])
+        label_dict = dict(parse)
+        labels = []
+        for image in images:
+            im_id = image.split('/')[-1].split.('.')[0]
+            labels.append(label_dict[im_id])
+    elif os.path.isdir(os.path.join(dir, 'labels')):
+        Exception('Not yet implemented load_labels for image folder')
+    else:
+        Exception('load_labels expects %s to contain labels.txt or labels folder' % dir)
 
 def default_loader(path):
     return Image.open(path).convert('RGB')
