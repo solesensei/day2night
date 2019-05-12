@@ -4,8 +4,10 @@
 
 __Lomonosov Moscow State University,__ Faculty of Computer Science, Graphics Lab
 
+## Approach
 
-<img src="diploma/source/img/speedtest.png" width="200"/>
 
 
-![](diploma/source/img/speedtest.png =100x20)
+## Results
+
+![](diploma/source/img/results.svg)
