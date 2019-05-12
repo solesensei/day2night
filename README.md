@@ -4,10 +4,10 @@
 
 __Lomonosov Moscow State University,__ Faculty of Computer Science, Graphics Lab
 
-## Approach
-
+<!-- ## Approach -->
 
 
 ## Results
 
+### UNIT
 ![](diploma/source/img/results.svg)
