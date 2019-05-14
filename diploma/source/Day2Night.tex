@@ -1161,31 +1161,43 @@
 			\end{figure}
 
 			\noindent
-			После обучения детектора (подробнее о его работе можно узнать тут~\cite{disser_aug}) на предоставленной модели, был получен результирующий AP (Average Precision) выше, чем на реальных данных, что означает, общее повышение качества обучения, а значит подтверждает заявленную эффективность применения модели.
+			После обучения детекторов (подробнее о их работе можно узнать тут~\cite{disser_aug}) на предоставленной модели, были получены результирующие AP (Average Precision) выше, чем на реальных данных, что означает, общее повышение качества обучения, а значит подтверждает заявленную эффективность применения модели.
 			
-			В сравнении с конкурентным алгоритмом CycleGAN~\cite{CycleGAN}, основанном на схожей архитектуре, был отмечен больший рост точности детекции автомобилей на изображениях дня.
-			На аугментации с помощью CycleGAN детектор получил более высокие значения на изображениях ночи.
-			Полные результаты проведенного сравнения были взяты из исследования~\cite{disser_aug} и представлены в таблице~\ref{tab:aug}.
+			В сравнении с конкурентным алгоритмом CycleGAN~\cite{CycleGAN}, основанном на схожей архитектуре, был отмечен больший рост точности детекции автомобилей днем \cite[RetinaNet]{detector:retina-net} и ночью \cite[Faster R-CNN]{detector:faster-r-cnn}.
+			Полные результаты проведенного сравнения были взяты из исследования~\cite{disser_aug} и представлены в таблицах~\ref{tab:aug:retina-net} и \ref{tab:aug:faster-r-cnn}.
 
 			\begin{table}[ht]
 				\centering
 				\begin{tabular}{|l|c|c|c|}
 				\hline
 				\multicolumn{1}{|c|}{{\color[HTML]{9A0000} \textbf{RetinaNet}}} & \textbf{День}   & \textbf{Ночь}   & \textbf{Все}    \\ \hline
-				Настоящие данные                                                & 0.8664          & 0.8406          & 0.8535          \\ \hline
+				Реальные данные                                                 & 0.8664          			 & 0.8406         			 & 0.8535          \\ \hline
 				CycleGAN                                                        & 0.8701 (+0.42\%)           & \textbf{0.8571 (+1.96\%)} & \textbf{0.8636 (+1.18\%)} \\ \hline
 				Модель                                                          & \textbf{0.8749 (+0.98\%)}  & 0.8512 (+1.26\%)          & 0.8631 (+1.12\%)          \\ \hline
 				\end{tabular}
-				\caption{Результаты полученные детектором RetinaNet~\cite{disser_aug}}
-				\label{tab:aug}
+				\caption{Результаты полученные детектором RetinaNet~\cite{detector:retina-net}}
+				\label{tab:aug:retina-net}
+			\end{table}
+
+			\begin{table}[ht]
+				\centering
+				\begin{tabular}{|l|c|c|c|}
+				\hline
+				\multicolumn{1}{|c|}{{\color[HTML]{9A0000} \textbf{Faster R-CNN}}} & \textbf{День}             & \textbf{Ночь}             & \textbf{Все}              \\ \hline
+				Реальные данные                                                    & 0.9015                    & 0.8822                    & 0.8919                    \\ \hline
+				CycleGAN                                                           & \textbf{0.9087 (+0.79\%)} & 0.8881 (+0.66\%)          & 0.8984 (+0.72\%)          \\ \hline
+				Модель                                                             & 0.9066 (+0.56\%)          & \textbf{0.8929 (+1.21\%)} & \textbf{0.8998 (+0.88\%)} \\ \hline
+				\end{tabular}
+				\caption{Результаты полученные детектором Faster R-CNN~\cite{detector:faster-r-cnn}}
+				\label{tab:aug:faster-r-cnn}
 			\end{table}
 			
 			\vspace{-2em}
 			\subsubsection*{Вывод}
 			
 				Таким образом, в совместном исследовании с~\cite{disser_aug} подтверждается, что в работе получена конкурентоспособная модель изменения времени суток на изображении.
-				Был отмечен прирост точности по сравнению с альтернативными методами аугментации на дневных изображениях, откуда можно сделать вывод, что перенос из ночи в день был выполнен успешнее у моей модели.
-				Однозначно выделить победителя не удалось, так как детектор получает лучшие результаты на изображениях ночи у CycleGAN~\cite{CycleGAN}.
+				Был отмечен прирост точности по сравнению с альтернативными методами аугментации на изображениях.
+				Однако однозначно выделить победителя не удалось, так как оба детектора~\cite{detector:faster-r-cnn,detector:retina-net} получают близкие результаты с CycleGAN~\cite{CycleGAN}.
 				
 				В любом случае, CycleGAN и UNIT, на котором основана моя модель, имеют схожую архитектуру, о чем уже было рассказано в разделах~\ref{sec:cc}, \ref{sec:latent} и отмечается в работе~\cite{UNIT_vs_CycleGAN}, откуда и следует близость их результатов.
 				В совокупности с полученной экспериментальной оценкой и метрикой сходства SSIM, табл.~\ref{tab:metrics}, можно утверждать что теоретически оба метода имеют достаточную точность для выполнения реалистичного переноса изображений, в частности подходят для задачи изменения времени суток в равной степени.
@@ -1369,7 +1381,7 @@
 
 	\bibitem{disser_aug}
 	\textbf{Д.И.\,Савинкина}.
-	\emph{Преобразование изображений для обучения детекторов объектов}.
+	\emph{Преобразование изображений для обучения детекторов объектов},
 	дис. маг. фак. ВМиК, Московский Государственный Университет им. Ломоносова
 	Москва, 2019.
 
@@ -1378,6 +1390,17 @@
 	\emph{Image quality assessment: from error visibility to structural similarity}.
 	IEEE Transactions on Image Processing,
 	2004
+
+	\bibitem{detector:retina-net}
+	\textbf{T.-Y.\,Lin, P.\,Goyal, R.\,Girshick, K.\,He, P.\,Dollár}.
+	\emph{Focal Loss for Dense Object Detection}.
+	Facebook AI Research (FAIR),
+	February 2018.
+
+	\bibitem{detector:faster-r-cnn}
+	\textbf{S.\,Ren, K.\,He, R.\,Girshick, J.\,Sun}.
+	\emph{Faster R-CNN: Towards Real-Time Object Detection with Region Proposal Networks}.
+	In NIPS, 2015.
 
 	\bibitem{data:nexet}
 	\href{https://www.getnexar.com/challenge-2/}{\textbf{\underline{NEXET Dataset}}},
