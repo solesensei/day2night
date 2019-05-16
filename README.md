@@ -38,13 +38,13 @@ docker pull solesensei/day2night:pytorch_0.4.1 # CUDA 9 : Ubuntu LTS 18.04
 # or
 docker pull solesensei/day2night:pytorch_0.4.1_cuda9 # CUDA 9 : Ubuntu LTS 16.04
 ```
-All tags: 
+**All tags:**
 - `pytorch_0.4.1_cuda9` : CUDA 9, Ubuntu LTS 16.04, Pytorh==0.4.1
 - `cyclegan` - CUDA 9, Base,  Pytorh>=1.0.1
 - `pytorch_0.4.1` - CUDA 10, Ubuntu LTS 18.04, Pytorh==0.4.1
 - `pytorch_latest` - CUDA 10, Ubuntu LTS 18.04, Pytorch>=1.0.1
 
-Run container
+#### Run container
 ```bash
 cd ~/prj
 docker run -it -p 1111:1111 --name day2night --mount type=bind,source=$PWD,target=/mnt/w/prj -w /mnt/w/prj/UNIT --runtime nvidia -i -t solesensei/day2night:pytorch_0.4.1 # your tag here
