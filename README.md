@@ -39,9 +39,9 @@ docker pull solesensei/day2night:pytorch_0.4.1 # CUDA 9 : Ubuntu LTS 18.04
 docker pull solesensei/day2night:pytorch_0.4.1_cuda9 # CUDA 9 : Ubuntu LTS 16.04
 ```
 **All tags:**
-- `pytorch_0.4.1_cuda9` : CUDA 9, Ubuntu LTS 16.04, Pytorh==0.4.1
-- `cyclegan` - CUDA 9, Base,  Pytorh>=1.0.1
-- `pytorch_0.4.1` - CUDA 10, Ubuntu LTS 18.04, Pytorh==0.4.1
+- `pytorch_0.4.1_cuda9` : CUDA 9, Ubuntu LTS 16.04, Pytorch==0.4.1
+- `cyclegan` - CUDA 9, Base,  Pytorch>=1.0.1
+- `pytorch_0.4.1` - CUDA 10, Ubuntu LTS 18.04, Pytorch==0.4.1
 - `pytorch_latest` - CUDA 10, Ubuntu LTS 18.04, Pytorch>=1.0.1
 
 #### Run container
