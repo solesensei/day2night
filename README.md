@@ -4,6 +4,69 @@
 
 __Lomonosov Moscow State University,__ Faculty of Computer Science, Graphics Lab
 
+## Test with Docker
+_This repo is huge_
+
+### Automated
+So you can download **bash** [script](day2night/UNIT/scripts/day2night.sh)
+```bash
+wget https://raw.githubusercontent.com/solesensei/day2night/master/day2night/UNIT/scripts/day2night.sh -O ~/prj/day2night.sh
+```
+Then just run (_in repository you want to start_)
+```bash
+cd ~/prj
+bash day2night.sh
+```
+
+### Manually
+
+#### Get project
+Clone repository
+```bash
+git clone --depth 1 https://github.com/solesensei/day2night.git
+```
+or just get the code ([if not working](#PT-models))
+```
+wget --no-check-certificate -r "https://docs.google.com/uc?export=download&id=1mrj0vDzuFufpmxSW5SMIAn9XekegX4Hh" -O code.zip
+unzip -o code.zip
+```
+
+#### Get image
+Pull Docker image
+```bash
+docker pull solesensei/day2night:pytorch_0.4.1 # CUDA 9 : Ubuntu LTS 18.04
+# or
+docker pull solesensei/day2night:pytorch_0.4.1_cuda9 # CUDA 9 : Ubuntu LTS 16.04
+```
+All tags: 
+- `pytorch_0.4.1_cuda9` : CUDA 9, Ubuntu LTS 16.04, Pytorh==0.4.1
+- `cyclegan` - CUDA 9, Base,  Pytorh>=1.0.1
+- `pytorch_0.4.1` - CUDA 10, Ubuntu LTS 18.04, Pytorh==0.4.1
+- `pytorch_latest` - CUDA 10, Ubuntu LTS 18.04, Pytorch>=1.0.1
+
+Run container
+```bash
+cd ~/prj
+docker run -it -p 1111:1111 --name day2night --mount type=bind,source=$PWD,target=/mnt/w/prj -w /mnt/w/prj/UNIT --runtime nvidia -i -t solesensei/day2night:pytorch_0.4.1 # your tag here
+```
+
+Modify parametrs in [test.sh](./day2night/UNIT/scripts/test.sh)
+
+And run test
+```bash
+cd ~/prj/UNIT
+bash ./scripts/test.sh
+```
+or train
+```bash
+bash ./scripts/test.sh
+```
+
+### PT-models
+
+- **[Google.Drive](https://drive.google.com/open?id=1Qe_AEZ1qeN8i5Q2cgXqGDmjKdXDRpBhT)**
+- **[Minimal Source Code](https://drive.google.com/open?id=1mrj0vDzuFufpmxSW5SMIAn9XekegX4Hh)**
+
 ## UNIT vs. CycleGAN
 
 |                              RetinaNet                              |         Day        |         Night        |         All         |
