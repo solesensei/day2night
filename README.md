@@ -11,9 +11,10 @@ _This repo is huge_
 - Ubuntu 18.04 LTS
 ### Requirements
 ```bash
-pip3 install -r requirements.txt 
+pip3 install -r requirements.txt
+pip3 install -r scripts/requirements.txt # for scripts 
 ```
-or **[use docker](#Test-with-Docker)**
+or **[use docker](# Docker)**
 
 ---
 
@@ -50,11 +51,11 @@ python train.py --device $gpu --config $config --trainer UNIT
 ## Docker
 
 ### Automated
-So you can download **bash** [script](day2night/UNIT/scripts/day2night.sh)
+Download **bash** [script](day2night/UNIT/scripts/day2night.sh)
 ```bash
 wget https://raw.githubusercontent.com/solesensei/day2night/master/day2night/UNIT/scripts/day2night.sh -O ~/prj/day2night.sh
 ```
-Then just run (_in repository you want to start_)
+Then just run it (_in repository you want to start_)
 ```bash
 cd ~/prj
 bash day2night.sh
@@ -74,10 +75,10 @@ docker pull solesensei/day2night:pytorch_0.4.1 # CUDA 10 : Ubuntu 18.04 LTS
 docker pull solesensei/day2night:pytorch_0.4.1_cuda9 # CUDA 9 : Ubuntu 16.04 LTS
 ```
 **All tags:**
-- `pytorch_0.4.1_cuda9` : CUDA 9, Ubuntu LTS 16.04, Pytorch==0.4.1
-- `cyclegan` - CUDA 9, Base,  Pytorch>=1.0.1
-- `pytorch_0.4.1` - CUDA 10, Ubuntu LTS 18.04, Pytorch==0.4.1
-- `pytorch_latest` - CUDA 10, Ubuntu LTS 18.04, Pytorch>=1.0.1
+- `pytorch_0.4.1_cuda9` : CUDA 9, Ubuntu 16.04 LTS, Pytorch==0.4.1
+- `cyclegan` - CUDA 9, Base, Pytorch>=1.0.1
+- `pytorch_0.4.1` - CUDA 10, Ubuntu 18.04 LTS, Pytorch==0.4.1
+- `pytorch_latest` - CUDA 10, Ubuntu 18.04 LTS, Pytorch>=1.0.1
 
 #### Run container
 ```bash
