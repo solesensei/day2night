@@ -4,8 +4,50 @@
 
 __Lomonosov Moscow State University,__ Faculty of Computer Science, Graphics Lab
 
-## Test with Docker
+## Usage
 _This repo is huge_
+### System
+- Python 3.6
+- Ubuntu 18.04 LTS
+### Requirements
+```bash
+pip3 install -r requirements.txt 
+```
+or **[use docker](#Test-with-Docker)**
+
+---
+
+## Usage
+
+### Get project
+Clone repository
+```bash
+git clone --depth 1 https://github.com/solesensei/day2night.git
+```
+or just get the code ([if not working](#PT-models))
+```
+wget --no-check-certificate -r "https://docs.google.com/uc?export=download&id=1mrj0vDzuFufpmxSW5SMIAn9XekegX4Hh" -O code.zip
+unzip -o code.zip
+```
+
+### Testing
+Modify parametrs in [test.sh](./day2night/UNIT/scripts/test.sh)
+
+And **run test**
+```bash
+cd ~/prj/UNIT
+bash ./scripts/test.sh
+# or
+python test_batch.py --device $gpu --config $config --input_folder $indir --output_folder $outdir --number $number --checkpoint $checkpoint --a2b $d2n --trainer UNIT --recon
+```
+### Training
+```bash
+bash ./scripts/train.sh
+# or
+python train.py --device $gpu --config $config --trainer UNIT
+```
+
+## Docker
 
 ### Automated
 So you can download **bash** [script](day2night/UNIT/scripts/day2night.sh)
@@ -20,26 +62,19 @@ bash day2night.sh
 
 ### Manually
 
-#### Get project
-Clone repository
-```bash
-git clone --depth 1 https://github.com/solesensei/day2night.git
-```
-or just get the code ([if not working](#PT-models))
-```
-wget --no-check-certificate -r "https://docs.google.com/uc?export=download&id=1mrj0vDzuFufpmxSW5SMIAn9XekegX4Hh" -O code.zip
-unzip -o code.zip
-```
+**[Get project](#Get-project)**
 
 #### Get image
+
 Pull Docker image
+
 ```bash
-docker pull solesensei/day2night:pytorch_0.4.1 # CUDA 9 : Ubuntu LTS 18.04
+docker pull solesensei/day2night:pytorch_0.4.1 # CUDA 10 : Ubuntu 18.04 LTS
 # or
-docker pull solesensei/day2night:pytorch_0.4.1_cuda9 # CUDA 9 : Ubuntu LTS 16.04
+docker pull solesensei/day2night:pytorch_0.4.1_cuda9 # CUDA 9 : Ubuntu 16.04 LTS
 ```
 **All tags:**
-- `pytorch_0.4.1_cuda9` : CUDA 10, Ubuntu LTS 16.04, Pytorch==0.4.1
+- `pytorch_0.4.1_cuda9` : CUDA 9, Ubuntu LTS 16.04, Pytorch==0.4.1
 - `cyclegan` - CUDA 9, Base,  Pytorch>=1.0.1
 - `pytorch_0.4.1` - CUDA 10, Ubuntu LTS 18.04, Pytorch==0.4.1
 - `pytorch_latest` - CUDA 10, Ubuntu LTS 18.04, Pytorch>=1.0.1
@@ -50,19 +85,9 @@ cd ~/prj
 docker run -it -p 1111:1111 --name day2night --mount type=bind,source=$PWD,target=/mnt/w/prj -w /mnt/w/prj/UNIT --runtime nvidia -i -t solesensei/day2night:pytorch_0.4.1 # your tag here
 ```
 
-Modify parametrs in [test.sh](./day2night/UNIT/scripts/test.sh)
+#### [Run Test](#Testing)
 
-And run test
-```bash
-cd ~/prj/UNIT
-bash ./scripts/test.sh
-```
-or train
-```bash
-bash ./scripts/test.sh
-```
-
-### PT-models
+## PT-models
 
 - **[Google.Drive](https://drive.google.com/open?id=1Qe_AEZ1qeN8i5Q2cgXqGDmjKdXDRpBhT)**
 - **[Minimal Source Code](https://drive.google.com/open?id=1mrj0vDzuFufpmxSW5SMIAn9XekegX4Hh)**
