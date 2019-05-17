@@ -41,7 +41,7 @@ def load_labels(dir, images):
         label_dict = dict(parse)
         labels = []
         for image in images:
-            im_id = image.split('/')[-1].split.('.')[0]
+            im_id = image.split('/')[-1].split('.')[0]
             labels.append(label_dict[im_id])
     elif os.path.isdir(os.path.join(dir, 'labels')):
         Exception('Not yet implemented load_labels for image folder')
