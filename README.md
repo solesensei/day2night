@@ -86,7 +86,7 @@ cd ~/prj
 docker run -it -p 1111:1111 --name day2night --mount type=bind,source=$PWD,target=/mnt/w/prj -w /mnt/w/prj/UNIT --runtime nvidia -i -t solesensei/day2night:pytorch_0.4.1 # your tag here
 ```
 
-#### [Run Test](#Testing)
+**[Run Test](#Testing)**
 
 ## PT-models
 
