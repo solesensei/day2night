@@ -5,7 +5,7 @@
 __Lomonosov Moscow State University,__ Faculty of Computer Science, Graphics Lab
 
 ## Usage
-_This repo is huge_
+_**Just Code Version**_
 ### System
 - Python 3.6
 - Ubuntu 18.04 LTS
