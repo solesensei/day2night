@@ -29,7 +29,7 @@ git clone --depth 1 https://github.com/solesensei/day2night.git
 # Mini repo (just code)
 git clone --branch code --depth 1 https://github.com/solesensei/day2night.git
 ```
-or just get the code ([if not working](#PT-models))
+or get the code from drive ([if not working](#PT-models))
 ```
 wget --no-check-certificate -r "https://docs.google.com/uc?export=download&id=1mrj0vDzuFufpmxSW5SMIAn9XekegX4Hh" -O code.zip
 unzip -o code.zip
