@@ -5,7 +5,8 @@
 __Lomonosov Moscow State University,__ Faculty of Computer Science, Graphics Lab
 
 ## Usage
-_This repo is huge_
+_**This repo is huge**_
+
 ### System
 - Python 3.6
 - Ubuntu 18.04 LTS
@@ -23,7 +24,10 @@ or **[use docker](#Docker)**
 ### Get project
 Clone repository
 ```bash
+# Full repo
 git clone --depth 1 https://github.com/solesensei/day2night.git
+# Mini repo (just code)
+git clone --branch code --depth 1 https://github.com/solesensei/day2night.git
 ```
 or just get the code ([if not working](#PT-models))
 ```
