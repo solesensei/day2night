@@ -46,6 +46,20 @@ bash ./scripts/test.sh
 python test_batch.py --device $gpu --config $config --input_folder $indir --output_folder $outdir --number $number --checkpoint $checkpoint --a2b $d2n --trainer UNIT --recon
 ```
 ### Training
+Modify parametrs in [train.sh](./day2night/UNIT/scripts/train.sh) and configs.
+
+#### Get data
+```bash
+# BDD100k
+kaggle datasets download -d solesensei/solesensei_bdd100k
+# NEXET
+kaggle datasets download -d solesensei/nexet-original
+```
+#### Prepare data
+
+See [DomainShifter](scripts/DomainShifter) and [DataClassificator](scripts/DataClassificator).
+
+#### Start training
 ```bash
 bash ./scripts/train.sh
 # or
