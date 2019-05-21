@@ -42,6 +42,33 @@ def vid2img(video_path, images_dir, fps=-1, duration=-1):
     reader.close()
     print(f'Complete!')
 
+def gif2img(gif_path, images_dir, duration=-1):
+    if not os.path.exists(images_dir):
+        print(f'No {images_dir} path found')
+        return
+    gif = Image.open(gif_path)
+    frames = gif_frames = gif.n_frames
+    gif_len = int(gif.info['duration']) / 1000 * frames
+    gif_flen = str(timedelta(seconds=gif_len))
+    gif_fps = frames // gif_len
+    if duration != -1:
+        f_duration = str(timedelta(seconds=duration))
+        frames = min(int(duration * gif_fps), gif_frames)
+    else:
+        f_duration = 'full'
+
+    print(f'Start converting: GIF -> IMAGES | {gif_path} -> {images_dir}')
+    print(f'GIF Duration: {gif_flen}')
+    print(f'GIF Frames: {gif_frames}')
+    print(f'Save Duration: {f_duration}')
+    print(f'Save Frames: {frames}')
+
+    for frame in tqdm(range(0, frames), desc='Split gif into frames'):
+        gif.seek(frame)
+        img_name = f'{images_dir}/image{str(frame+1).zfill(7)}.png'
+        gif.save(img_name)
+    gif.close()
+    print(f'Complete!')
 
 def vid2gif(video_path, gif_path, fps=-1, duration=-1):
     if not os.path.exists(video_path):
@@ -187,9 +214,13 @@ if __name__ == "__main__":
     day_vid = f'{data_dir}/day1_orig.avi'
     night_vid = f'{data_dir}/night1_orig.avi'
     check_dir = '/mnt/w/prj/GraduateWork/day2night/UNIT/checkpoints'
+    gif_path = './gif/day2night.gif'
 
-    img2img(f'{check_dir}/unit/out', f'{check_dir}/unit_no_err/out', concat=True, concat_dir=f'{check_dir}/unit_no_err/concat2')
-    img2img(f'{check_dir}/unit/out/input', f'{check_dir}/unit_no_err/concat2', concat=True, concat_dir=f'{check_dir}/unit/concat3')
+    # gif2img(gif_path, 'gif/img')
+    # img2img('gif/img', 'gif/img/vgg', concat=True, concat_dir=f'img')
+    img2gif('img', 'day2night.gif', fps=10)
+    # img2img(f'{check_dir}/unit/out', f'{check_dir}/unit_no_err/out', concat=True, concat_dir=f'{check_dir}/unit_no_err/concat2')
+    # img2img(f'{check_dir}/unit/out/input', f'{check_dir}/unit_no_err/concat2', concat=True, concat_dir=f'{check_dir}/unit/concat3')
     # vid2img(night_vid, 'img/night_orig', fps=5, duration=20)
     # vid2img(day_vid, 'img/day_orig', fps=5, duration=20)
     # img2gif('img/day_orig', 'gif/day_orig.gif', fps=5)
