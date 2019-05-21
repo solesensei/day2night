@@ -6,6 +6,7 @@ __Lomonosov Moscow State University,__ Faculty of Computer Science, Graphics Lab
 
 ## Usage
 _**Just Code Version**_
+
 ### System
 - Python 3.6
 - Ubuntu 18.04 LTS
@@ -23,9 +24,12 @@ or **[use docker](#Docker)**
 ### Get project
 Clone repository
 ```bash
+# Full repo
 git clone --depth 1 https://github.com/solesensei/day2night.git
+# Mini repo (just code)
+git clone --branch code --depth 1 https://github.com/solesensei/day2night.git
 ```
-or just get the code ([if not working](#PT-models))
+or get the code from drive ([if not working](#PT-models))
 ```
 wget --no-check-certificate -r "https://docs.google.com/uc?export=download&id=1mrj0vDzuFufpmxSW5SMIAn9XekegX4Hh" -O code.zip
 unzip -o code.zip
@@ -42,6 +46,20 @@ bash ./scripts/test.sh
 python test_batch.py --device $gpu --config $config --input_folder $indir --output_folder $outdir --number $number --checkpoint $checkpoint --a2b $d2n --trainer UNIT --recon
 ```
 ### Training
+Modify parametrs in [train.sh](./day2night/UNIT/scripts/train.sh) and configs.
+
+#### Get data
+```bash
+# BDD100k
+kaggle datasets download -d solesensei/solesensei_bdd100k
+# NEXET
+kaggle datasets download -d solesensei/nexet-original
+```
+#### Prepare data
+
+See [DomainShifter](scripts/DomainShifter) and [DataClassificator](scripts/DataClassificator).
+
+#### Start training
 ```bash
 bash ./scripts/train.sh
 # or
@@ -115,4 +133,8 @@ docker run -it -p 1111:1111 --name day2night --mount type=bind,source=$PWD,targe
 
 ## Results
 ### UNIT
+_(top to bottom: input - reconstructed - translated)_
 ![](diploma/source/img/results.svg)
+
+_Input - no VGG - VGG_
+![](scripts/Any2Gif/day2night.gif)
