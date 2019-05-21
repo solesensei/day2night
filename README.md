@@ -120,3 +120,4 @@ docker run -it -p 1111:1111 --name day2night --mount type=bind,source=$PWD,targe
 ## Results
 ### UNIT
 ![](diploma/source/img/results.svg)
+_(top to bottom: input - reconstructed - translated)_
