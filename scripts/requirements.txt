@@ -1,7 +1,7 @@
 imutils==0.5.2
 imageio==2.5.0
 pandas==0.24.2
-opencv_python==4.1.0.25
+opencv_python==4.2.0.32
 scikit_image==0.15.0
 tqdm==4.31.1
 numpy==1.16.3
