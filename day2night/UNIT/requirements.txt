@@ -1,4 +1,4 @@
-Pillow==6.2.1
+Pillow==9.0.0
 numpy==1.16.2
 tensorboardX==1.6
 torch==1.0.1.post2
