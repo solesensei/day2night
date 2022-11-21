@@ -49,6 +49,12 @@ python test_batch.py --device $gpu --config $config --input_folder $indir --outp
 Modify parametrs in [train.sh](./day2night/UNIT/scripts/train.sh) and configs.
 
 #### Get data
+
+I used two open datasets. 
+
+- [Nexet 2017](https://www.kaggle.com/datasets/solesensei/nexet-original) provided by Nexar. [See more.](https://data.getnexar.com/blog/nexet-the-largest-and-most-diverse-road-dataset-in-the-world/) 
+- [bdd100k 2018](https://www.kaggle.com/datasets/solesensei/solesensei_bdd100k) under [bdd100 licence](https://doc.bdd100k.com/license.html#license) from [bdd100k.com](https://www.bdd100k.com/). [See more](https://bair.berkeley.edu/blog/2018/05/30/bdd/).
+
 ```bash
 # BDD100k
 kaggle datasets download -d solesensei/solesensei_bdd100k
