@@ -140,9 +140,9 @@ class DomainShifter(object):
                 if i % 1000 == 0:
                     print(i, 'files processed', end='\r')
                 is_shifted = False
+                name = str(row[col_name])
                 src = os.path.join(base, name)
                 if os.path.exists(src):
-                    name = str(row[col_name])
                     state = str(row[col_state])
 
                     if state == 'Twilight':
