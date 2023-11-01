@@ -2,7 +2,7 @@ tqdm==4.31.1
 pandas==0.24.2
 numpy==1.16.3
 imageio==2.5.0
-scipy==1.2.1
+scipy==1.10.0
 moviepy==1.0.0
 scikit_image==0.15.0
 dominate==2.3.5
