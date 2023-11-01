@@ -1,6 +1,6 @@
 tqdm==4.31.1
 pandas==0.24.2
-numpy==1.16.3
+numpy==1.22.0
 imageio==2.5.0
 scipy==1.2.1
 moviepy==1.0.0
