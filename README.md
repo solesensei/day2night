@@ -1,6 +1,8 @@
 # Day2Night | Image2Image Translation Research 
+<a href="https://www.buymeacoffee.com/solesensei"><img src="https://www.buymeacoffee.com/assets/img/custom_images/orange_img.png" height="20px"></a>
 
 [Diploma](./diploma/source/Day2Night.pdf) | Graduation Work | Bachelor's Degree
+
 
 __Lomonosov Moscow State University,__ Faculty of Computer Science, Graphics Lab
 
@@ -144,3 +146,5 @@ _(top to bottom: input - reconstructed - translated)_
 
 _Input - no VGG - VGG_
 ![](scripts/Any2Gif/day2night.gif)
+
+<a href="https://www.buymeacoffee.com/solesensei" target="_blank"><img src="https://cdn.buymeacoffee.com/buttons/v2/default-orange.png" alt="Buy Me A Coffee" height="41" width="174"></a>
