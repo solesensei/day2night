@@ -10,7 +10,7 @@ visdom==0.1.8.8
 imutils==0.5.2
 torchvision==0.2.2.post3
 torch==0.4.1.post2
-opencv_python==4.1.0.25
+opencv_python==4.2.0.32
 requests==2.21.0
 matplotlib==3.0.3
 Pillow==6.2.0
