@@ -16,4 +16,4 @@ matplotlib==3.0.3
 Pillow==6.2.0
 beautifulsoup4==4.7.1
 tensorboardX==1.6
-PyYAML==5.1
+PyYAML==5.4
